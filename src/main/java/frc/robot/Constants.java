@@ -13,16 +13,31 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.1;
 
+     // Elevator
+    public static final int kElevatorPivotMotorId = 10;
+    public static final int kElevatorExtensionMotorId = 9;
+
+      // Pivot set points
+    public static final double kPivotGroundCount = 0;
+    public static final double kPivotScoreCount = -55;
+    public static final double kPivotPreScoreCount = -65;
+    public static final double kPivotStowCount = -120;
+
+    // Extension set points
+    public static final double kExtensionStowCount = 0;
+    public static final double kExtensionMidGoalCount = 34;
+    public static final double kExtensionHighGoalCount = 72;
+
     public static final class Swerve {
         public static final int pigeonID = 1;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
-        public static final COTSFalconSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
+        public static final COTSFalconSwerveConstants chosenModule = 
             COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(23); //TODO: This must be tuned to specific robot but already set for wooden swerve
+        public static final double wheelBase = Units.inchesToMeters(33); //TODO: This must be tuned to specific robot but already set for wooden swerve
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
