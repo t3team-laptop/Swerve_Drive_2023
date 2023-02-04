@@ -129,14 +129,14 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Configure Driver Controller Buttons
+        /*  Configure Driver Controller Buttons 
         ALB.whileTrue(repeatRet);
         ARB.whileTrue(repeatExt);
         AB.onTrue(ceil);
         AX.onTrue(floor);
         AY.onTrue(top);
         AA.onTrue(middle);
-        
+        */
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
