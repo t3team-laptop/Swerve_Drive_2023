@@ -22,11 +22,15 @@ public final class Constants {
     public static final double kPivotScoreCount = -55;
     public static final double kPivotPreScoreCount = -65;
     public static final double kPivotStowCount = -120;
+    public static final int kTimeoutMs = 0;
 
     // Extension set points
     public static final double kExtensionStowCount = 0;
     public static final double kExtensionMidGoalCount = 34;
     public static final double kExtensionHighGoalCount = 72;
+
+    // Gripper 
+    public static final int PneumaticHubID = 0;
 
     public static final class Swerve {
         public static final int pigeonID = 0;

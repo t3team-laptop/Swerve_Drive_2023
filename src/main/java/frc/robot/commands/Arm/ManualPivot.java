@@ -9,14 +9,14 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorPivot;
 
 public class ManualPivot extends CommandBase {
-  private Elevator elevator;
+  private ElevatorPivot elevator;
   private DoubleSupplier ySup;
 
   /** Creates a new ManualPivot. */
-  public ManualPivot(Elevator elevator, DoubleSupplier ySup) {
+  public ManualPivot(ElevatorPivot elevator, DoubleSupplier ySup) {
     this.elevator = elevator;
     addRequirements(elevator);
     

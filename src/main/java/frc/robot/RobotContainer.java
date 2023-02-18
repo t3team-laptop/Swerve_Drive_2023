@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.Arm.*;
+import frc.robot.commands.Gripper.CloseGripper;
+import frc.robot.commands.Gripper.OpenGripper;
 import frc.robot.subsystems.*;
 
 /**
@@ -33,7 +35,8 @@ public class RobotContainer {
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Arm Controls */
-    private final int yAxis = XboxController.Axis.kLeftY.value;
+    private final int pivotAxis = XboxController.Axis.kLeftY.value;
+    private final int extensionAxis = XboxController.Axis.kRightY.value;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(baseDriver, XboxController.Button.kY.value);
@@ -41,17 +44,20 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Elevator elevator;
+    private final ElevatorPivot elevatorPivot;
+    private final ElevatorExtension elevatorExtension;
+    private final Gripper gripper;
 
     // Commands //
     CeilingPreset ceil;
-    ElevatorExtend extend;
     RepeatCommand repeatExt;
-    ElevatorRetract retract;
     RepeatCommand repeatRet;
     FloorPreset floor;
     MiddlePreset middle;
     TopPreset top;
+
+    CloseGripper closeGripper;
+    OpenGripper openGripper;
 
     
 
@@ -70,29 +76,41 @@ public class RobotContainer {
         );
 
 
-        elevator = new Elevator();
+        elevatorPivot = new ElevatorPivot();
+        elevatorExtension = new ElevatorExtension();
 
-        elevator.setDefaultCommand(
+
+        elevatorPivot.setDefaultCommand(
             new ManualPivot(
-                elevator,
-                () -> armDriver.getRawAxis(yAxis)
+                elevatorPivot,
+                () -> armDriver.getRawAxis(pivotAxis)
             )   
         );
 
-        ceil = new CeilingPreset(elevator);
-        ceil.addRequirements(elevator);
-        extend = new ElevatorExtend(elevator);
-        extend.addRequirements(elevator);
-        repeatExt = new RepeatCommand(extend);
-        retract = new ElevatorRetract(elevator);
-        retract.addRequirements(elevator);
-        repeatRet = new RepeatCommand(retract);
-        floor = new FloorPreset(elevator);
-        floor.addRequirements(elevator);
-        middle = new MiddlePreset(elevator);
-        middle.addRequirements(elevator);
-        top = new TopPreset(elevator);
-        top.addRequirements(elevator);
+        elevatorExtension.setDefaultCommand(
+            new ElevatorExtend(
+                elevatorExtension,
+                () -> armDriver.getRawAxis(extensionAxis))
+        );
+        
+
+        ceil = new CeilingPreset(elevatorPivot);
+        ceil.addRequirements(elevatorPivot);
+        floor = new FloorPreset(elevatorPivot);
+        floor.addRequirements(elevatorPivot);
+        middle = new MiddlePreset(elevatorPivot, elevatorExtension);
+        middle.addRequirements(elevatorPivot);
+        middle.addRequirements(elevatorExtension);
+        top = new TopPreset(elevatorPivot, elevatorExtension);
+        top.addRequirements(elevatorPivot);
+        top.addRequirements(elevatorExtension);
+
+        gripper = new Gripper();
+
+        closeGripper = new CloseGripper(gripper);
+        closeGripper.addRequirements(gripper);
+        openGripper = new OpenGripper(gripper);
+        openGripper.addRequirements(gripper);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -130,13 +148,16 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /*  Configure Driver Controller Buttons 
-        ALB.whileTrue(repeatRet);
-        ARB.whileTrue(repeatExt);
+        ALT.whileTrue(repeatRet);
+        ART.whileTrue(repeatExt);
         AB.onTrue(ceil);
         AX.onTrue(floor);
         AY.onTrue(top);
         AA.onTrue(middle);
         */
+
+        ALB.onTrue(closeGripper);
+        ARB.onTrue(openGripper);
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));

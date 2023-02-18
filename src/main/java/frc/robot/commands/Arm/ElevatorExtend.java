@@ -4,15 +4,22 @@
 
 package frc.robot.commands.Arm;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Elevator;
+import frc.robot.Constants;
+import frc.robot.subsystems.ElevatorExtension;
 
 public class ElevatorExtend extends CommandBase {
-  private Elevator elevator;
+  private ElevatorExtension elevator;
+  private DoubleSupplier axisSup;
   /** Creates a new ElevatorExtend. */
-  public ElevatorExtend(Elevator elevator) {
+  public ElevatorExtend(ElevatorExtension elevator, DoubleSupplier axisSup) {
     this.elevator = elevator;
     addRequirements(elevator);
+
+    this.axisSup = axisSup;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -23,8 +30,12 @@ public class ElevatorExtend extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(elevator.mExtensionEncoder.getPosition() < 100){ //TODO: find upper bound for elevator extension
-    elevator.extend();
+    double axisVal = MathUtil.applyDeadband(axisSup.getAsDouble(), Constants.stickDeadband);
+    if(axisVal > 0 && elevator.mExtensionEncoder.getPosition() < 100){ //TODO: find upper bound for elevator extension
+    elevator.extend(axisVal);
+    }
+    else if(axisVal < 0 && elevator.mExtensionEncoder.getPosition() > 0){ //TODO: find lower bound for elevator extension
+      elevator.retract(-axisVal);
     }
 
   }

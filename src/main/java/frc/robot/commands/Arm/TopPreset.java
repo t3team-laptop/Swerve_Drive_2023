@@ -5,14 +5,19 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.subsystems.ElevatorExtension;
 
 public class TopPreset extends CommandBase {
-  private Elevator elevator;
+  private ElevatorPivot elevator;
+  private ElevatorExtension elevatorExtension;
   /** Creates a new TopPreset. */
-  public TopPreset(Elevator elevator) {
+  public TopPreset(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
     this.elevator = elevator;
     addRequirements(elevator);
+    
+    this.elevatorExtension = elevatorExtension;
+    addRequirements(elevatorExtension);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -24,7 +29,7 @@ public class TopPreset extends CommandBase {
   @Override
   public void execute() {
     elevator.goToPivotScore();
-    elevator.goToExtensionHighGoal();
+    elevatorExtension.goToExtensionHighGoal();
   }
 
   // Called once the command ends or is interrupted.

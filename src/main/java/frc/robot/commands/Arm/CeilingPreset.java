@@ -5,12 +5,12 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorPivot;
 
 public class CeilingPreset extends CommandBase {
-  Elevator elevator;
+  ElevatorPivot elevator;
   /** Creates a new CeilingPreset. */
-  public CeilingPreset(Elevator elevator) {
+  public CeilingPreset(ElevatorPivot elevator) {
     this.elevator = elevator;
     addRequirements(elevator);
     // Use addRequirements() here to declare subsystem dependencies.
