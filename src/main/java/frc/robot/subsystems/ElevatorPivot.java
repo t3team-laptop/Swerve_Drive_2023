@@ -4,13 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
-import com.revrobotics.SparkMaxPIDController;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,7 +20,12 @@ public class ElevatorPivot extends SubsystemBase {
   private static final double kPivotPowerIn = -0.7;
   private static final double kPivotBoostAmount = -3;
   private static final double kPivotBoost2Amount = -15;
-
+  private static final int kPIDLoopIdx = 0; // i dont know what value this should be it said default to 
+  private static final int kMaxOutput = 1; // i also have no fucking clue what the value should be
+  private static final double kI =0;
+  private static final double kD =0;
+  private static final double kF =0;
+  private static final double kP = 0;
   private static final double kPivotCLRampRate = 0.5;
 
   private static ElevatorPivot mInstance;
@@ -33,29 +37,34 @@ public class ElevatorPivot extends SubsystemBase {
     return mInstance;
   }
 
-  private CANSparkMax mPivotMotor;
-  private RelativeEncoder mPivotEncoder;
-  private SparkMaxPIDController mPivotPIDController;
-  private SparkMaxLimitSwitch mPivotLowerLimit;
+  private TalonFX mPivotMotor;
+  //private SparkMaxPIDController mPivotPIDController;  i have no clue how to do the pid stuff
 
   private PeriodicIO mPeriodicIO = new PeriodicIO();
 
   /** Creates a new ElevatorPivot. */
   public ElevatorPivot() {
-    mPivotMotor = new CANSparkMax(Constants.kElevatorPivotMotorId, MotorType.kBrushless);
-    mPivotMotor.restoreFactoryDefaults();
-    mPivotPIDController = mPivotMotor.getPIDController();
-    mPivotEncoder = mPivotMotor.getEncoder();
+    mPivotMotor = new TalonFX(Constants.kElevatorPivotMotorId);
+    mPivotMotor.configFactoryDefault();
+    mPivotMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    mPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,kPIDLoopIdx,Constants.kTimeoutMs);
+    //mPivotPIDController = mPivotMotor.getPIDController();
 
-    mPivotPIDController.setP(0.1);
-    mPivotPIDController.setI(1e-8);
-    mPivotPIDController.setD(1);
-    mPivotPIDController.setIZone(0);
-    mPivotPIDController.setFF(0);
-    mPivotPIDController.setOutputRange(kPivotPowerIn, kPivotPowerOut);
-    mPivotMotor.setClosedLoopRampRate(kPivotCLRampRate);
+    mPivotMotor.configNominalOutputForward(0,Constants.kTimeoutMs);
+    mPivotMotor.configNominalOutputReverse(0,Constants.kTimeoutMs);
+    mPivotMotor.configPeakOutputForward(kMaxOutput,Constants.kTimeoutMs);
+    mPivotMotor.configPeakOutputReverse(kMaxOutput,Constants.kTimeoutMs);
 
-    mPivotLowerLimit = mPivotMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+
+    mPivotMotor.config_kP(kPIDLoopIdx,kI,Constants.kTimeoutMs);
+    mPivotMotor.config_kI(kPIDLoopIdx,kD,Constants.kTimeoutMs);
+    mPivotMotor.config_kD(kPIDLoopIdx,kF,Constants.kTimeoutMs);
+    mPivotMotor.config_kF(kPIDLoopIdx,kP,Constants.kTimeoutMs);
+
+
+    //mPivotMotor.setClosedLoopRampRate(kPivotCLRampRate);
+
+    mPivotMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
 
     mPeriodicIO = new PeriodicIO();
   }
@@ -109,17 +118,17 @@ public class ElevatorPivot extends SubsystemBase {
   public void writePeriodicOutputs() {
     if (mPeriodicIO.is_pivot_pos_control) {
       if (mPeriodicIO.is_pivot_boosted) {
-        mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoostAmount,
-            CANSparkMax.ControlType.kPosition);
+        //mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoostAmount,
+            //CANSparkMax.ControlType.kPosition);
       } else if (mPeriodicIO.is_pivot_boosted2) {
-        mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoost2Amount,
-            CANSparkMax.ControlType.kPosition);
+        //mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoost2Amount,
+            //CANSparkMax.ControlType.kPosition);
       } else {
-        mPivotPIDController.setReference(mPeriodicIO.pivot_target,
-            CANSparkMax.ControlType.kPosition);
+        //mPivotPIDController.setReference(mPeriodicIO.pivot_target,
+           // CANSparkMax.ControlType.kPosition);
       }
     } else {
-      mPivotMotor.set(mPeriodicIO.pivot_power);
+      mPivotMotor.set(ControlMode.PercentOutput,mPeriodicIO.pivot_power);
     }
   }
 
@@ -130,19 +139,13 @@ public class ElevatorPivot extends SubsystemBase {
   public void stopPivot() {
     if (!mPeriodicIO.is_pivot_pos_control) {
       mPeriodicIO.pivot_power = 0.0;
-      mPivotMotor.set(0.0);
+      mPivotMotor.set(ControlMode.PercentOutput,0.0);
     }
   }
 
   public void resetPivotEncoder() {
-    mPivotEncoder.setPosition(0);
+    mPivotMotor.setSelectedSensorPosition(0);
   }
 
-  public void outputTelemetry() {
-    // Pivot telemetry
-    SmartDashboard.putNumber("Pivot motor power:", mPeriodicIO.pivot_power);
-    SmartDashboard.putNumber("Pivot encoder count:", mPivotEncoder.getPosition());
-    SmartDashboard.putNumber("Pivot PID target:", mPeriodicIO.pivot_power);
-    SmartDashboard.putBoolean("Pivot lower limit:", mPivotLowerLimit.isPressed());
-  }
+ 
 }

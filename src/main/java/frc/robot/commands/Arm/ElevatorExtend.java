@@ -31,10 +31,10 @@ public class ElevatorExtend extends CommandBase {
   @Override
   public void execute() {
     double axisVal = MathUtil.applyDeadband(axisSup.getAsDouble(), Constants.stickDeadband);
-    if(axisVal > 0 && elevator.mExtensionEncoder.getPosition() < 100){ //TODO: find upper bound for elevator extension
+    if(axisVal > 0 && elevator.getExtensionMotor().getSelectedSensorPosition() < 100){ //TODO: find upper bound for elevator extension
     elevator.extend(axisVal);
     }
-    else if(axisVal < 0 && elevator.mExtensionEncoder.getPosition() > 0){ //TODO: find lower bound for elevator extension
+    else if(axisVal < 0 && elevator.getExtensionMotor().getSelectedSensorPosition() > 0){ //TODO: find lower bound for elevator extension
       elevator.retract(-axisVal);
     }
 

@@ -4,17 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
-import com.revrobotics.SparkMaxPIDController;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.*;
+import com.ctre.phoenix.motorcontrol.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import com.revrobotics.CANSparkMax;
 
 public class ElevatorExtension extends SubsystemBase {
   private static final double kExtensionPowerOut = 0.6;
@@ -30,33 +25,26 @@ public class ElevatorExtension extends SubsystemBase {
     return mInstance;
   }
 
-  private CANSparkMax mExtensionMotor;
-  public RelativeEncoder mExtensionEncoder;
-  private SparkMaxPIDController mExtensionPIDController;
-  private SparkMaxLimitSwitch mExtensionLowerLimit;
-  private SparkMaxLimitSwitch mExtensionUpperLimit;
+  private TalonFX mExtensionMotor;
 
   private PeriodicIO mPeriodicIO = new PeriodicIO();
 
   /** Creates a new ElevatorExtension. */
   public ElevatorExtension() {
-    mExtensionMotor = new CANSparkMax(Constants.kElevatorExtensionMotorId, MotorType.kBrushless);
-    mExtensionMotor.restoreFactoryDefaults();
-    mExtensionMotor.setIdleMode(IdleMode.kBrake);
+    mExtensionMotor = new TalonFX(Constants.kElevatorExtensionMotorId);
+    mExtensionMotor.configFactoryDefault();
+    mExtensionMotor.setNeutralMode(NeutralMode.Brake);
     mExtensionMotor.setInverted(true);
-    mExtensionPIDController = mExtensionMotor.getPIDController();
-    mExtensionEncoder = mExtensionMotor.getEncoder();
+    mExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    mExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    mExtensionMotor.setSensorPhase(true);
+    
+    
+    
+    mExtensionMotor.configClosedloopRamp(kExtensionCLRampRate);
 
-    mExtensionPIDController.setP(0.1);
-    mExtensionPIDController.setI(1e-8);
-    mExtensionPIDController.setD(1);
-    mExtensionPIDController.setIZone(0);
-    mExtensionPIDController.setFF(0);
-    mExtensionPIDController.setOutputRange(kExtensionPowerIn, kExtensionPowerOut);
-    mExtensionMotor.setClosedLoopRampRate(kExtensionCLRampRate);
-
-    mExtensionLowerLimit = mExtensionMotor.getReverseLimitSwitch(Type.kNormallyOpen);
-    mExtensionUpperLimit = mExtensionMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+     mExtensionMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
+     mExtensionMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
 
     mPeriodicIO = new PeriodicIO();
   }
@@ -91,6 +79,9 @@ public class ElevatorExtension extends SubsystemBase {
     mPeriodicIO.is_extension_pos_control = true;
     mPeriodicIO.extension_target = Constants.kExtensionHighGoalCount;
   }
+  public TalonFX getExtensionMotor(){
+    return mExtensionMotor;
+  }
 
 
   @Override
@@ -100,9 +91,9 @@ public class ElevatorExtension extends SubsystemBase {
 
   public void writePeriodicOutputs() {
     if (mPeriodicIO.is_extension_pos_control) {
-      mExtensionPIDController.setReference(mPeriodicIO.extension_target, CANSparkMax.ControlType.kPosition);
+     // mExtensionPIDController.setReference(mPeriodicIO.extension_target, CANSparkMax.ControlType.kPosition);
     } else {
-      mExtensionMotor.set(mPeriodicIO.extension_power);
+      mExtensionMotor.set(ControlMode.PercentOutput,mPeriodicIO.extension_power);
     }
   }
 
@@ -113,19 +104,18 @@ public class ElevatorExtension extends SubsystemBase {
   public void stopExtension() {
     if (!mPeriodicIO.is_extension_pos_control) {
       mPeriodicIO.extension_power = 0.0;
-      mExtensionMotor.set(0.0);
+      mExtensionMotor.set(ControlMode.PercentOutput,0.0);
     }
   }
 
   public void resetExtensionEncoder() {
-    mExtensionEncoder.setPosition(0);
+    mExtensionMotor.setSelectedSensorPosition(0);
   }
 
   public void outputTelemetry() {
     // Extension telemetry
     SmartDashboard.putNumber("Extension motor power:", mPeriodicIO.extension_power);
-    SmartDashboard.putNumber("Extension encoder count:", mExtensionEncoder.getPosition());
-    SmartDashboard.putBoolean("Extension lower limit:", mExtensionLowerLimit.isPressed());
-    SmartDashboard.putBoolean("Extension Upper limit:", mExtensionUpperLimit.isPressed());
+    SmartDashboard.putBoolean("Extension lower limit:", mExtensionMotor.getStatorCurrent() == 0);
+    SmartDashboard.putBoolean("Extension Upper limit:", mExtensionMotor.getStatorCurrent() == 0);
   }
 }
