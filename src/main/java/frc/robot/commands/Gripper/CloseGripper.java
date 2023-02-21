@@ -23,7 +23,7 @@ public class CloseGripper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    gripper.setReverse();
+    gripper.openGripper();
   }
 
   // Called once the command ends or is interrupted.

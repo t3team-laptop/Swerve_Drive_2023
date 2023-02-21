@@ -23,7 +23,7 @@ public class OpenGripper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    gripper.setForward();
+    gripper.closeGripper();
   }
 
   // Called once the command ends or is interrupted.

@@ -5,32 +5,33 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Gripper extends SubsystemBase {
-  PneumaticHub mHub;
-  private static int forwardChannel;
-  private static int reverseChannel;
-  static DoubleSolenoid m_DoubleSolenoid;
+  DoubleSolenoid mSolenoid;
+  Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
   /** Creates a new Gripper. */
   public Gripper() {
-    mHub = new PneumaticHub(Constants.PneumaticHubID);
-    forwardChannel = 0;
-    reverseChannel = 1;
-    m_DoubleSolenoid = mHub.makeDoubleSolenoid(forwardChannel, reverseChannel);
+    mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+    compressor.enableDigital();
   }
 
-  public static void setForward(){
-    m_DoubleSolenoid.set(DoubleSolenoid.Value.kForward);
+  public void disable(){
+    mSolenoid.set(Value.kOff);
+    compressor.disable();
   }
-  public static void setReverse(){
-    m_DoubleSolenoid.set(DoubleSolenoid.Value.kReverse);
+  public void openGripper(){
+    mSolenoid.set(Value.kForward);
   }
-
+  public void closeGripper(){
+    mSolenoid.set(Value.kReverse);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
