@@ -59,7 +59,7 @@ public class RobotContainer {
     CloseGripper closeGripper;
     OpenGripper openGripper;
 
-    
+    XLock xLock;
 
 
 
@@ -74,6 +74,10 @@ public class RobotContainer {
                 () -> robotCentric.getAsBoolean()
             )
         );
+
+        xLock = new XLock(s_Swerve);
+        xLock.addRequirements(s_Swerve);
+
 
 
         elevatorPivot = new ElevatorPivot();
@@ -158,6 +162,8 @@ public class RobotContainer {
 
         ALB.onTrue(closeGripper);
         ARB.onTrue(openGripper);
+
+        DX.onTrue(xLock);
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));

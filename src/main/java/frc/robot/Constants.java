@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -150,6 +151,8 @@ public final class Constants {
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
+        public static final PathConstraints constraints = new PathConstraints(1, 1);
+        
         public static final double kMaxSpeedMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
@@ -164,4 +167,38 @@ public final class Constants {
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
+
+    public enum SEGMENT { // Numbers in order of segment from left to right (driver station POV)
+        CONE_1(0), CONE_2(1), CONE_3(3), CONE_4(-1), CONE_5(-1), CONE_6(-1),
+        CUBE_1(0), CUBE_2(1), CUBE_3(3);
+    
+        private int level;
+    
+        private SEGMENT(int level){
+          this.level = level;
+        }
+    
+        public static SEGMENT getSegment(int level, boolean cone){
+          if(cone){
+            switch(level){
+                case 1: return CONE_1;
+                case 2: return CONE_2;
+                case 3: return CONE_3;
+            }
+          }
+          else{
+            switch(level){
+                case 1: return CUBE_1;
+                case 2: return CUBE_2;
+                case 3: return CUBE_3;
+            }
+          }
+          return null;
+        }
+    
+        public int getValue(){
+          return level;
+        }
+        
+      }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,7 +23,7 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
-
+    private Field2d field;
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.configFactoryDefault();
@@ -42,6 +43,7 @@ public class Swerve extends SubsystemBase {
         resetModulesToAbsolute();
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
+        field = new Field2d();
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -65,6 +67,9 @@ public class Swerve extends SubsystemBase {
         }
     }    
 
+    
+
+
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
@@ -74,8 +79,18 @@ public class Swerve extends SubsystemBase {
         }
     }    
 
+    public void setModuleRotation(Rotation2d rotation){
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(new SwerveModuleState(0,rotation), false);
+        }
+    }
+
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
+    }
+
+    public Field2d getField(){
+        return field;
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -121,5 +136,6 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
+        field.setRobotPose(getPose());
     }
 }
