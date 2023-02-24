@@ -15,6 +15,7 @@ public class XLock extends CommandBase {
   /** Creates a new XLock. */
   public XLock(Swerve s_Swerve) {
     this.s_Swerve = s_Swerve;
+    addRequirements(s_Swerve);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

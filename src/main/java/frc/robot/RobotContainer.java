@@ -160,8 +160,8 @@ public class RobotContainer {
         AA.onTrue(middle);
         */
 
-        ALB.onTrue(closeGripper);
-        ARB.onTrue(openGripper);
+        //ALB.onTrue(closeGripper);
+        //ARB.onTrue(openGripper);
 
         DX.onTrue(xLock);
 
