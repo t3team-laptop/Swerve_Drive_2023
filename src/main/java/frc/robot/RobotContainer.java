@@ -53,6 +53,7 @@ public class RobotContainer {
     MiddlePreset middle;
     TopPreset top;
 
+    XLock xLock;
     
 
 
@@ -69,6 +70,8 @@ public class RobotContainer {
             )
         );
 
+        xLock = new XLock(s_Swerve);
+        xLock.addRequirements(s_Swerve);
 
         elevator = new Elevator();
 
@@ -94,9 +97,6 @@ public class RobotContainer {
         top = new TopPreset(elevator);
         top.addRequirements(elevator);
 
-        // Configure the button bindings
-        configureButtonBindings();
-
          //Declare Driver Controller Buttons
          DA = new JoystickButton(baseDriver, 1);
          DB = new JoystickButton(baseDriver, 2);
@@ -120,6 +120,9 @@ public class RobotContainer {
          ART = new JoystickButton(armDriver, 3);
          AM1 = new JoystickButton(armDriver, 7);
          AM2 = new JoystickButton(armDriver, 8);
+
+         // Configure the button bindings
+        configureButtonBindings();
     }
 
     /**
@@ -140,6 +143,7 @@ public class RobotContainer {
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        DX.onTrue(xLock);
     }
 
     /**
