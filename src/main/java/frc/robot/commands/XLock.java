@@ -26,10 +26,7 @@ public class XLock extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    s_Swerve.mSwerveMods[0].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45.0)),true);
-    s_Swerve.mSwerveMods[1].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(315.0)),true);
-    s_Swerve.mSwerveMods[2].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(315.0)),true);
-    s_Swerve.mSwerveMods[3].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45.0)),true);
+    s_Swerve.setX();
   }
 
   // Called once the command ends or is interrupted.
@@ -39,6 +36,6 @@ public class XLock extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
