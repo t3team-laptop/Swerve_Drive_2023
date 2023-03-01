@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -54,6 +55,14 @@ public class RobotContainer {
     /* Autonomous Mode Chooser */
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
 
+    /* Autonomous Modes */
+    PathPlannerTrajectory moveForward = PathPlanner.loadPath("Move Forward",
+    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    PathPlannerTrajectory sCurve = PathPlanner.loadPath("S Curve",
+    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    PathPlannerTrajectory sussy = PathPlanner.loadPath("sussy",
+    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+ 
     // Commands //
     CeilingPreset ceil;
     RepeatCommand repeatExt;
