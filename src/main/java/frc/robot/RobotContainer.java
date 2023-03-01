@@ -1,8 +1,11 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -47,6 +50,9 @@ public class RobotContainer {
     private final ElevatorPivot elevatorPivot;
     private final ElevatorExtension elevatorExtension;
     private final Gripper gripper;
+
+    /* Autonomous Mode Chooser */
+    private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
 
     // Commands //
     CeilingPreset ceil;
@@ -176,10 +182,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
 
-    /* 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        return new executeTrajectory(s_Swerve, autoChooser.getSelected(), true);
     }
-    */
 }

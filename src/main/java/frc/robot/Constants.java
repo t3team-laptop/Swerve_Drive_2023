@@ -1,12 +1,18 @@
 package frc.robot;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.pathplanner.lib.PathConstraints;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
@@ -80,6 +86,13 @@ public final class Constants {
         public static final double openLoopRamp = 0.25;
         public static final double closedLoopRamp = 0.0;
 
+        public static final double pitchSetPoint = 0.0;
+
+        public static final double drivePitchKP = 0.04;
+        public static final double drivePitchKI = 0.00005;
+        public static final double drivePitchKD = 0.000000000000001;
+        public static final double drivePitchKFF = 0.000000000000001;
+
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
         public static final double angleKI = chosenModule.angleKI;
@@ -103,6 +116,9 @@ public final class Constants {
         public static final double maxSpeed = 4.8; //TODO: This must be tuned to specific robot
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
+
+        /* Swerve Limiting Values */
+        public static final double autoCenterLimit = .3;
 
         /* Neutral Modes */
         public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
@@ -150,22 +166,50 @@ public final class Constants {
         }
     }
 
-    public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
-        public static final PathConstraints constraints = new PathConstraints(1, 1);
-        
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-    
-        public static final double kPXController = 1;
-        public static final double kPYController = 1;
-        public static final double kPThetaController = 1;
-    
-        /* Constraint for the motion profilied robot angle controller */
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-            new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+    public static final class AutoConstants {
+      public static final PathConstraints constraints = new PathConstraints(1, 1);
+  
+      public static final double kMaxSpeedMetersPerSecond = 3;
+      public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+      public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+  
+      public static final double kPXController = 1;
+      public static final double kPYController = 1;
+      public static final double kPThetaController = 1;
+    }
+  
+    public static final class PhotonVision{
+      public static final String photonVisionName = "OV5647";
+      public static final Transform3d robotToCam =
+      new Transform3d(
+              new Translation3d(Units.inchesToMeters(11.4), 0.0, Units.inchesToMeters(6.4)),
+              new Rotation3d(
+                      0, 0,
+                      0));
+    }
+  
+    public static final class AprilTags {
+      public static final AprilTag tag1 = new AprilTag(1, FieldConstants.aprilTags.get(1));
+      public static final AprilTag tag2 = new AprilTag(2, FieldConstants.aprilTags.get(2));
+      public static final AprilTag tag3 = new AprilTag(3, FieldConstants.aprilTags.get(3));
+      public static final AprilTag tag4 = new AprilTag(4, FieldConstants.aprilTags.get(4));
+      public static final AprilTag tag5 = new AprilTag(5, FieldConstants.aprilTags.get(5));
+      public static final AprilTag tag6 = new AprilTag(6, FieldConstants.aprilTags.get(6));
+      public static final AprilTag tag7 = new AprilTag(7, FieldConstants.aprilTags.get(7));
+      public static final AprilTag tag8 = new AprilTag(8, FieldConstants.aprilTags.get(8));
+      public static final ArrayList<AprilTag> aprilTagList = new ArrayList<>();
+  
+      static {
+        aprilTagList.add(tag1);
+        aprilTagList.add(tag2);
+        aprilTagList.add(tag3);
+        aprilTagList.add(tag4);
+        aprilTagList.add(tag5);
+        aprilTagList.add(tag6);
+        aprilTagList.add(tag7);
+        aprilTagList.add(tag8);
+      }
     }
 
     public enum SEGMENT { // Numbers in order of segment from left to right (driver station POV)
