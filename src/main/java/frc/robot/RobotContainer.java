@@ -57,11 +57,7 @@ public class RobotContainer {
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
 
     /* Autonomous Modes */
-    PathPlannerTrajectory moveForward = PathPlanner.loadPath("Move Forward",
-    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
-    PathPlannerTrajectory sCurve = PathPlanner.loadPath("S Curve",
-    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
-    PathPlannerTrajectory sussy = PathPlanner.loadPath("sussy",
+    PathPlannerTrajectory moveForward = PathPlanner.loadPath("Test",
     Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
  
     // Commands //
@@ -76,6 +72,7 @@ public class RobotContainer {
     OpenGripper openGripper;
 
     XLock xLock;
+    AutoBalancing autoBalance;
 
 
 
@@ -132,6 +129,9 @@ public class RobotContainer {
         openGripper = new OpenGripper(gripper);
         openGripper.addRequirements(gripper);
 
+        autoBalance = new AutoBalancing(s_Swerve);
+        autoBalance.addRequirements(s_Swerve);
+
          //Declare Driver Controller Buttons
          DA = new JoystickButton(baseDriver, 1);
          DB = new JoystickButton(baseDriver, 2);
@@ -158,6 +158,7 @@ public class RobotContainer {
 
          // Configure the button bindings
         configureButtonBindings();
+        configureSmartDashboard();
     }
 
     /**
@@ -180,6 +181,7 @@ public class RobotContainer {
         //ARB.onTrue(openGripper);
 
         DX.onTrue(xLock);
+        DB.onTrue(autoBalance);
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
@@ -187,9 +189,7 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboard() {
-        autoChooser.setDefaultOption("Move forward", moveForward);
-        autoChooser.addOption("S curve", sCurve);
-        autoChooser.addOption("SUSSY - CADEN", sussy);
+        autoChooser.setDefaultOption("Test", moveForward);
     
         SmartDashboard.putData(autoChooser);
       }

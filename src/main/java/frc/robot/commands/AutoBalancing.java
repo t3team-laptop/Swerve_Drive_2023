@@ -41,11 +41,7 @@ public class AutoBalancing extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        // SwerveModule[] modules = s_Swerve.getModules();
-        // modules[0].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45.0), true);
-        // modules[1].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(315.0), true);
-        // modules[2].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(315.0), true);
-        // modules[3].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45.0), true);
+        s_Swerve.setX();
     }
 
     @Override
