@@ -1,8 +1,14 @@
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,9 +27,12 @@ import frc.robot.commands.Gripper.OpenGripper;
 import frc.robot.subsystems.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -49,17 +58,46 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final ElevatorPivot elevatorPivot;
-    private final ElevatorExtension elevatorExtension;
-    private final Gripper gripper;
+    private final ElevatorPivot elevatorPivot = new ElevatorPivot();
+    private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
+    private final Gripper gripper = new Gripper();
 
     /* Autonomous Mode Chooser */
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
 
-    /* Autonomous Modes */
-    PathPlannerTrajectory moveForward = PathPlanner.loadPath("Test",
-    Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
- 
+    /* Autonomous */
+    private static Map<String, Command> eventMap = new HashMap<>();
+    {
+        eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+        eventMap.put("releaseGripper", new OpenGripper(gripper));
+        eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
+        eventMap.put("floorArm", new FloorPreset(elevatorPivot));
+        eventMap.put("closeGripper", new CloseGripper(gripper));
+    }
+
+    private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+            s_Swerve::getPose,
+            s_Swerve::resetOdometry,
+            Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+            new PIDConstants(Constants.AutoConstants.kPXController, 0, 0),
+            new PIDConstants(Constants.AutoConstants.kPThetaController, 0, 0),
+            s_Swerve::setModuleStates, eventMap, true, s_Swerve);
+
+    private final PathPlannerTrajectory leaveCommunityAndDock = PathPlanner.loadPath("Leave Community && Dock",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory communityLeaveOnly = PathPlanner.loadPath("Community Leave Only",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory allCommunityLvl3 = PathPlanner.loadPath("All Community Lvl 3",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory twoCommunityLvl3 = PathPlanner.loadPath("2 Community Lvl 3",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory leaveScoreDock = PathPlanner.loadPath("Leave, Score, Dock",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
     // Commands //
     CeilingPreset ceil;
     RepeatCommand repeatExt;
@@ -72,44 +110,31 @@ public class RobotContainer {
     OpenGripper openGripper;
 
     XLock xLock;
-    AutoBalancing autoBalance;
 
-
-
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> -baseDriver.getRawAxis(translationAxis), 
-                () -> -baseDriver.getRawAxis(strafeAxis), 
-                () -> -baseDriver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
-            )
-        );
+                new TeleopSwerve(
+                        s_Swerve,
+                        () -> -baseDriver.getRawAxis(translationAxis),
+                        () -> -baseDriver.getRawAxis(strafeAxis),
+                        () -> -baseDriver.getRawAxis(rotationAxis),
+                        () -> robotCentric.getAsBoolean()));
 
         xLock = new XLock(s_Swerve);
         xLock.addRequirements(s_Swerve);
 
-
-
-        elevatorPivot = new ElevatorPivot();
-        elevatorExtension = new ElevatorExtension();
-
-
         elevatorPivot.setDefaultCommand(
-            new ManualPivot(
-                elevatorPivot,
-                () -> armDriver.getRawAxis(pivotAxis)
-            )   
-        );
+                new ManualPivot(
+                        elevatorPivot,
+                        () -> armDriver.getRawAxis(pivotAxis)));
 
         elevatorExtension.setDefaultCommand(
-            new ElevatorExtend(
-                elevatorExtension,
-                () -> armDriver.getRawAxis(extensionAxis))
-        );
-        
+                new ElevatorExtend(
+                        elevatorExtension,
+                        () -> armDriver.getRawAxis(extensionAxis)));
 
         ceil = new CeilingPreset(elevatorPivot);
         ceil.addRequirements(elevatorPivot);
@@ -122,66 +147,64 @@ public class RobotContainer {
         top.addRequirements(elevatorPivot);
         top.addRequirements(elevatorExtension);
 
-        gripper = new Gripper();
-
         closeGripper = new CloseGripper(gripper);
         closeGripper.addRequirements(gripper);
         openGripper = new OpenGripper(gripper);
         openGripper.addRequirements(gripper);
 
-        autoBalance = new AutoBalancing(s_Swerve);
-        autoBalance.addRequirements(s_Swerve);
 
-         //Declare Driver Controller Buttons
-         DA = new JoystickButton(baseDriver, 1);
-         DB = new JoystickButton(baseDriver, 2);
-         DX = new JoystickButton(baseDriver, 3);
-         DY = new JoystickButton(baseDriver, 4);
-         DLB = new JoystickButton(baseDriver, 5);
-         DRB = new JoystickButton(baseDriver, 6);
-         DLT = new JoystickButton(baseDriver, 2);
-         DRT = new JoystickButton(baseDriver, 3);
-         DM1 = new JoystickButton(baseDriver, 7);
-         DM2 = new JoystickButton(baseDriver, 8);
+        // Declare Driver Controller Buttons
+        DA = new JoystickButton(baseDriver, 1);
+        DB = new JoystickButton(baseDriver, 2);
+        DX = new JoystickButton(baseDriver, 3);
+        DY = new JoystickButton(baseDriver, 4);
+        DLB = new JoystickButton(baseDriver, 5);
+        DRB = new JoystickButton(baseDriver, 6);
+        DLT = new JoystickButton(baseDriver, 2);
+        DRT = new JoystickButton(baseDriver, 3);
+        DM1 = new JoystickButton(baseDriver, 7);
+        DM2 = new JoystickButton(baseDriver, 8);
 
-         //Declare Arm Controller Buttons
-         AA = new JoystickButton(armDriver, 1);
-         AB = new JoystickButton(armDriver, 2);
-         AX = new JoystickButton(armDriver, 3);
-         AY = new JoystickButton(armDriver, 4);
-         ALB = new JoystickButton(armDriver, 5);
-         ARB = new JoystickButton(armDriver, 6);
-         ALT = new JoystickButton(armDriver, 2);
-         ART = new JoystickButton(armDriver, 3);
-         AM1 = new JoystickButton(armDriver, 7);
-         AM2 = new JoystickButton(armDriver, 8);
+        // Declare Arm Controller Buttons
+        AA = new JoystickButton(armDriver, 1);
+        AB = new JoystickButton(armDriver, 2);
+        AX = new JoystickButton(armDriver, 3);
+        AY = new JoystickButton(armDriver, 4);
+        ALB = new JoystickButton(armDriver, 5);
+        ARB = new JoystickButton(armDriver, 6);
+        ALT = new JoystickButton(armDriver, 2);
+        ART = new JoystickButton(armDriver, 3);
+        AM1 = new JoystickButton(armDriver, 7);
+        AM2 = new JoystickButton(armDriver, 8);
 
-         // Configure the button bindings
+        // Configure the button bindings
         configureButtonBindings();
         configureSmartDashboard();
     }
 
     /**
-     * Use this method to define your button->command mappings. Buttons can be created by
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /*  Configure Driver Controller Buttons 
-        ALT.whileTrue(repeatRet);
-        ART.whileTrue(repeatExt);
-        AB.onTrue(ceil);
-        AX.onTrue(floor);
-        AY.onTrue(top);
-        AA.onTrue(middle);
-        */
+        /*
+         * Configure Driver Controller Buttons
+         * ALT.whileTrue(repeatRet);
+         * ART.whileTrue(repeatExt);
+         * AB.onTrue(ceil);
+         * AX.onTrue(floor);
+         * AY.onTrue(top);
+         * AA.onTrue(middle);
+         */
 
-        //ALB.onTrue(closeGripper);
-        //ARB.onTrue(openGripper);
+        // ALB.onTrue(closeGripper);
+        // ARB.onTrue(openGripper);
 
         DX.onTrue(xLock);
-        DB.onTrue(autoBalance);
 
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
@@ -189,10 +212,21 @@ public class RobotContainer {
     }
 
     private void configureSmartDashboard() {
-        autoChooser.setDefaultOption("Test", moveForward);
-    
+        autoChooser.addOption("Leave Community && Dock", leaveCommunityAndDock);
+        autoChooser.addOption("Community Leave Only", communityLeaveOnly);
+        autoChooser.addOption("All Community Lvl 3", allCommunityLvl3);
+        autoChooser.addOption("2 Community Lvl 3", twoCommunityLvl3);
+        autoChooser.addOption("Leave, Score, Dock", leaveScoreDock);
         SmartDashboard.putData(autoChooser);
-      }
+    }
+
+    /**
+         * Ran once the robot is put in disabled
+         */
+        public void disabledInit() {
+            s_Swerve.resetModulesToAbsolute();
+    }
+    
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -201,6 +235,6 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new executeTrajectory(s_Swerve, autoChooser.getSelected(), true);
+        return autoBuilder.fullAuto(autoChooser.getSelected());
     }
 }
