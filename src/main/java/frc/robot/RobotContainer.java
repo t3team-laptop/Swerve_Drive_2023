@@ -8,6 +8,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.hal.simulation.REVPHDataJNI;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -114,8 +115,6 @@ public class RobotContainer {
 
 
     // Commands //
-    RepeatCommand repeatExt;
-    RepeatCommand repeatRet;
     FloorPreset floor;
     MiddlePreset middle;
     TopPreset top;
@@ -168,7 +167,6 @@ public class RobotContainer {
         openGripper = new OpenGripper(gripper);
         openGripper.addRequirements(gripper);
 
-
         // Declare Driver Controller Buttons
         DA = new JoystickButton(baseDriver, 1);
         DB = new JoystickButton(baseDriver, 2);
@@ -205,19 +203,18 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
      * it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
+     */                                                 
     private void configureButtonBindings() {
-        ALT.whileTrue(repeatRet);
-        ART.whileTrue(repeatExt);
         AX.onTrue(floor);
         AY.onTrue(top);
         AA.onTrue(middle);
+        AB.onTrue(resetArm);
         ALB.onTrue(closeGripper);
         ARB.onTrue(openGripper);
         
         DX.onTrue(xLock);
 
-        /* Driver Buttons */
+        /*  Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         DX.onTrue(xLock);
     }
