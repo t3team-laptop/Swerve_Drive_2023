@@ -209,8 +209,8 @@ public class RobotContainer {
         AY.onTrue(top);
         AA.onTrue(middle);
         AB.onTrue(resetArm);
-        ALB.onTrue(closeGripper);
-        ARB.onTrue(openGripper);
+        //ALB.onTrue(closeGripper);
+        //ARB.onTrue(openGripper);
         
         DX.onTrue(xLock);
 
