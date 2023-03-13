@@ -9,12 +9,12 @@ import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.subsystems.ElevatorExtension;
 
 public class TopPreset extends CommandBase {
-  private ElevatorPivot elevator;
+  private ElevatorPivot elevatorPivot;
   private ElevatorExtension elevatorExtension;
   /** Creates a new TopPreset. */
-  public TopPreset(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
-    this.elevator = elevator;
-    addRequirements(elevator);
+  public TopPreset(ElevatorPivot elevatorPivot, ElevatorExtension elevatorExtension) {
+    this.elevatorPivot = elevatorPivot;
+    addRequirements(elevatorPivot);
     
     this.elevatorExtension = elevatorExtension;
     addRequirements(elevatorExtension);
@@ -28,14 +28,16 @@ public class TopPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.goToPivotScore();
+    elevatorPivot.goToPivotScore();
     elevatorExtension.goToExtensionHighGoal();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stop();
+    elevatorPivot.stopPivot();
+    elevatorExtension.stopExtension();
+
   }
 
   // Returns true when the command should end.

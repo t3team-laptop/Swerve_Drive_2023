@@ -6,146 +6,61 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import com.revrobotics.CANSparkMax;
 
 public class ElevatorPivot extends SubsystemBase {
-  private static final double kPivotPowerOut = 1.0;
-  private static final double kPivotPowerIn = -0.7;
-  private static final double kPivotBoostAmount = -3;
-  private static final double kPivotBoost2Amount = -15;
-  private static final int kPIDLoopIdx = 0; // i dont know what value this should be it said default to 
-  private static final int kMaxOutput = 1; // i also have no fucking clue what the value should be
-  private static final double kI =0;
-  private static final double kD =0;
-  private static final double kF =0;
-  private static final double kP = 0;
-  private static final double kPivotCLRampRate = 0.5;
-
-  private static ElevatorPivot mInstance;
-
-  public static ElevatorPivot getInstance() {
-    if (mInstance == null) {
-      mInstance = new ElevatorPivot();
-    }
-    return mInstance;
-  }
-
-  private TalonFX mPivotMotor;
-  //private SparkMaxPIDController mPivotPIDController;  i have no clue how to do the pid stuff
-
-  private PeriodicIO mPeriodicIO = new PeriodicIO();
-
   /** Creates a new ElevatorPivot. */
+  private TalonFX leftPivotMotor;
+  private TalonFX rightPivotMotor;
+
   public ElevatorPivot() {
-    mPivotMotor = new TalonFX(Constants.kElevatorPivotMotorId);
-    mPivotMotor.configFactoryDefault();
-    mPivotMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    mPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,kPIDLoopIdx,Constants.kTimeoutMs);
-    //mPivotPIDController = mPivotMotor.getPIDController();
+    leftPivotMotor = new TalonFX(Constants.ElevatorPivotLeftID);
+    rightPivotMotor = new TalonFX(Constants.ElevatorPivotRightID);
+    leftPivotMotor.follow(rightPivotMotor);
+    rightPivotMotor.configFactoryDefault();
+    rightPivotMotor.setNeutralMode(NeutralMode.Brake);
+    rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
-    mPivotMotor.configNominalOutputForward(0,Constants.kTimeoutMs);
-    mPivotMotor.configNominalOutputReverse(0,Constants.kTimeoutMs);
-    mPivotMotor.configPeakOutputForward(kMaxOutput,Constants.kTimeoutMs);
-    mPivotMotor.configPeakOutputReverse(kMaxOutput,Constants.kTimeoutMs);
+    //rightPivotMotor.setSensorPhase(true); use if motor forwards and backwards is wack
+    //rightPivotMotor.setInverted(true); set true if motor spins wrong way
 
-
-    mPivotMotor.config_kP(kPIDLoopIdx,kI,Constants.kTimeoutMs);
-    mPivotMotor.config_kI(kPIDLoopIdx,kD,Constants.kTimeoutMs);
-    mPivotMotor.config_kD(kPIDLoopIdx,kF,Constants.kTimeoutMs);
-    mPivotMotor.config_kF(kPIDLoopIdx,kP,Constants.kTimeoutMs);
-
-
-    //mPivotMotor.setClosedLoopRampRate(kPivotCLRampRate);
-
-    mPivotMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
-
-    mPeriodicIO = new PeriodicIO();
-  }
-
-  private static class PeriodicIO {
-    double pivot_power = 0.0;
-    double pivot_target = 0.0;
-    boolean is_pivot_pos_control = false;
-    boolean is_pivot_boosted = false;
-    boolean is_pivot_boosted2 = false;
-  }
-
-  public void manual(double pivotPower) {
-    mPeriodicIO.is_pivot_pos_control = false;
-    mPeriodicIO.pivot_power = pivotPower;
-  }
-
-  public void goToPivotGround() {
-    mPeriodicIO.is_pivot_pos_control = true;
-    mPeriodicIO.pivot_target = Constants.kPivotGroundCount;
-  }
-
-  public void goToPivotScore() {
-    mPeriodicIO.is_pivot_pos_control = true;
-    mPeriodicIO.pivot_target = Constants.kPivotScoreCount;
-  }
-
-  public void goToPivotPreScore() {
-    mPeriodicIO.is_pivot_pos_control = true;
-    mPeriodicIO.pivot_target = Constants.kPivotPreScoreCount;
-  }
-
-  public void goToPivotStow() {
-    mPeriodicIO.is_pivot_pos_control = true;
-    mPeriodicIO.pivot_target = Constants.kPivotStowCount;
-  }
+    rightPivotMotor.configForwardSoftLimitThreshold(1000); //set to whatever limits are needed
+    rightPivotMotor.configReverseSoftLimitThreshold(1000); //^
+    rightPivotMotor.configForwardSoftLimitEnable(true, 0); 
+    rightPivotMotor.configReverseSoftLimitEnable(true, 0); 
   
-  public void boostPivot(boolean boost) {
-    mPeriodicIO.is_pivot_boosted = boost;
+  }
+  public void manual(double pivotVelocity){
+    rightPivotMotor.set(ControlMode.Velocity,pivotVelocity);
   }
 
-  public void boostPivot2(boolean boost) {
-    mPeriodicIO.is_pivot_boosted2 = boost;
+  public void goToPivotScore(){
+    rightPivotMotor.set(ControlMode.Position,0); //TODO: CONFIG POSITION
   }
 
+  public void goToPivotPreScore(){
+    rightPivotMotor.set(ControlMode.Position,0);//TODO: CONFIG POSITION
+  }
+
+  public void goToPivotStow(){
+    rightPivotMotor.set(ControlMode.Position,0);//TODO: CONFIG POSITION
+  }
+  public void stopPivot(){
+    rightPivotMotor.set(ControlMode.PercentOutput,0);
+  }
+  public void resetPivotEncoder(){
+    rightPivotMotor.setSelectedSensorPosition(0);
+  }
+  public void goToPivotGround(){
+    
+  }
   @Override
   public void periodic() {
-    writePeriodicOutputs();
+    // This method will be called once per scheduler run
   }
-
-  public void writePeriodicOutputs() {
-    if (mPeriodicIO.is_pivot_pos_control) {
-      if (mPeriodicIO.is_pivot_boosted) {
-        //mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoostAmount,
-            //CANSparkMax.ControlType.kPosition);
-      } else if (mPeriodicIO.is_pivot_boosted2) {
-        //mPivotPIDController.setReference(mPeriodicIO.pivot_target + kPivotBoost2Amount,
-            //CANSparkMax.ControlType.kPosition);
-      } else {
-        //mPivotPIDController.setReference(mPeriodicIO.pivot_target,
-           // CANSparkMax.ControlType.kPosition);
-      }
-    } else {
-      mPivotMotor.set(ControlMode.PercentOutput,mPeriodicIO.pivot_power);
-    }
-  }
-
-  public void stop() {
-    stopPivot();
-  }
-
-  public void stopPivot() {
-    if (!mPeriodicIO.is_pivot_pos_control) {
-      mPeriodicIO.pivot_power = 0.0;
-      mPivotMotor.set(ControlMode.PercentOutput,0.0);
-    }
-  }
-
-  public void resetPivotEncoder() {
-    mPivotMotor.setSelectedSensorPosition(0);
-  }
-
- 
 }

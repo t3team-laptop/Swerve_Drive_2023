@@ -4,118 +4,71 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.*;
-import com.ctre.phoenix.motorcontrol.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ElevatorExtension extends SubsystemBase {
-  private static final double kExtensionPowerOut = 0.6;
-  private static final double kExtensionPowerIn = -0.6;
-  private static final double kExtensionCLRampRate = 0.5;
+  /** Creates a new ElevatorExtend. */
+  private TalonFX leftExtensionMotor;
+  private TalonFX rightExtensionMotor;
 
-  private static ElevatorExtension mInstance;
+  
 
-  public static ElevatorExtension getInstance() {
-    if (mInstance == null) {
-      mInstance = new ElevatorExtension();
-    }
-    return mInstance;
+  public ElevatorExtension(){
+    leftExtensionMotor = new TalonFX(Constants.ElevatorExtensionLeftID);        // TODO: add proper IDs for the motor
+    rightExtensionMotor = new TalonFX(Constants.ElevatorExtensionRightID);      // TODO: add proper IDs for the motor
+    leftExtensionMotor.follow(rightExtensionMotor); //sets right motor to master and tells left motor to follow
+    rightExtensionMotor.configFactoryDefault();
+    rightExtensionMotor.setNeutralMode(NeutralMode.Brake);
+    rightExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+
+    //rightExtensionMotor.setSensorPhase(true); use if forwards and backwards is wacky
+    //rightExtensionMotor.setInverted(true); // if motors go wrong way set to true
+    rightExtensionMotor.configForwardSoftLimitThreshold(1000); //set to whatever limits are needed
+    rightExtensionMotor.configReverseSoftLimitThreshold(1000); //^
+    rightExtensionMotor.configForwardSoftLimitEnable(true, 0); 
+    rightExtensionMotor.configReverseSoftLimitEnable(true, 0); 
+  }
+  
+  public void extend(double val){
+    rightExtensionMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
   }
 
-  private TalonFX mExtensionMotor;
-
-  private PeriodicIO mPeriodicIO = new PeriodicIO();
-
-  /** Creates a new ElevatorExtension. */
-  public ElevatorExtension() {
-    mExtensionMotor = new TalonFX(Constants.kElevatorExtensionMotorId);
-    mExtensionMotor.configFactoryDefault();
-    mExtensionMotor.setNeutralMode(NeutralMode.Brake);
-    mExtensionMotor.setInverted(true);
-    mExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    mExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    mExtensionMotor.setSensorPhase(true);
-    
-    
-    
-    mExtensionMotor.configClosedloopRamp(kExtensionCLRampRate);
-
-     mExtensionMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
-     mExtensionMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,LimitSwitchNormal.NormallyOpen);
-
-    mPeriodicIO = new PeriodicIO();
+  public void retract(double val){
+    rightExtensionMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
   }
 
-  private static class PeriodicIO {
-    double extension_power = 0.0;
-    double extension_target = 0.0;
-    boolean is_extension_pos_control = false;
+  public void goToExtensionStow(){
+    rightExtensionMotor.set(ControlMode.Position, 0); // might not work TODO: CHANGE VALUE
   }
 
-  public void extend(double extensionPowerOut) {
-    mPeriodicIO.is_extension_pos_control = false;
-    mPeriodicIO.extension_power = extensionPowerOut;
+  public void goToExtensionMidGoal(){
+    rightExtensionMotor.set(ControlMode.Position,0);  // might not work TODO: CHANGE VALUE
   }
 
-  public void retract(double extensionPowerIn) {
-    mPeriodicIO.is_extension_pos_control = false;
-    mPeriodicIO.extension_power = extensionPowerIn;
+  public void goToExtensionHighGoal(){
+    rightExtensionMotor.set(ControlMode.Position,0); // might not work TODO: CHANGE VALUE
   }
 
-  public void goToExtensionStow() {
-    mPeriodicIO.is_extension_pos_control = true;
-    mPeriodicIO.extension_target = Constants.kExtensionStowCount;
+  public void stopExtension(){
+    rightExtensionMotor.set(ControlMode.PercentOutput, 0);
   }
 
-  public void goToExtensionMidGoal() {
-    mPeriodicIO.is_extension_pos_control = true;
-    mPeriodicIO.extension_target = Constants.kExtensionMidGoalCount;
+  public void resetExtensionEncoder(){
+    rightExtensionMotor.setSelectedSensorPosition(0);
   }
-
-  public void goToExtensionHighGoal() {
-    mPeriodicIO.is_extension_pos_control = true;
-    mPeriodicIO.extension_target = Constants.kExtensionHighGoalCount;
-  }
-  public TalonFX getExtensionMotor(){
-    return mExtensionMotor;
-  }
-
 
   @Override
   public void periodic() {
-    writePeriodicOutputs();
+    // This method will be called once per scheduler run
   }
 
-  public void writePeriodicOutputs() {
-    if (mPeriodicIO.is_extension_pos_control) {
-     // mExtensionPIDController.setReference(mPeriodicIO.extension_target, CANSparkMax.ControlType.kPosition);
-    } else {
-      mExtensionMotor.set(ControlMode.PercentOutput,mPeriodicIO.extension_power);
-    }
-  }
-
-  public void stop() {
-    stopExtension();
-  }
-
-  public void stopExtension() {
-    if (!mPeriodicIO.is_extension_pos_control) {
-      mPeriodicIO.extension_power = 0.0;
-      mExtensionMotor.set(ControlMode.PercentOutput,0.0);
-    }
-  }
-
-  public void resetExtensionEncoder() {
-    mExtensionMotor.setSelectedSensorPosition(0);
-  }
-
-  public void outputTelemetry() {
-    // Extension telemetry
-    SmartDashboard.putNumber("Extension motor power:", mPeriodicIO.extension_power);
-    SmartDashboard.putBoolean("Extension lower limit:", mExtensionMotor.getStatorCurrent() == 0);
-    SmartDashboard.putBoolean("Extension Upper limit:", mExtensionMotor.getStatorCurrent() == 0);
+  public double getExtensionMotorPosition() {
+      return rightExtensionMotor.getSelectedSensorPosition();
   }
 }
