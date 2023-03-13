@@ -10,14 +10,14 @@
         "x": 1.639026894899372,
         "y": 2.2461741042392083
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": -178.8655783693009,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "setcubelvl3",
+          "floorArm",
           "releaseGripper"
         ],
         "executionBehavior": "sequential",
@@ -138,7 +138,7 @@
         "x": 1.495612041595677,
         "y": 3.2569073560938215
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 178.83086067209257,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -252,22 +252,21 @@
     },
     {
       "anchorPoint": {
-        "x": 1.9463444376930044,
-        "y": 2.7447114514377673
+        "x": 1.8780516504055305,
+        "y": 2.724223615251525
       },
       "prevControl": {
-        "x": 2.274149816672878,
-        "y": 2.7447114514377673
+        "x": 2.2058570293854043,
+        "y": 2.724223615251525
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": -178.28164199834455,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "setcubelvl3",
           "releaseGripper"
         ],
         "executionBehavior": "sequential",
@@ -280,21 +279,18 @@
     {
       "position": 5.090909090908538,
       "names": [
-        "setcubelvl3",
         "releaseGripper"
       ]
     },
     {
       "position": 2.1818181818180133,
       "names": [
-        "floorArm",
         "closeGripper"
       ]
     },
     {
       "position": 7.090909090909824,
       "names": [
-        "floorArm",
         "closeGripper"
       ]
     }

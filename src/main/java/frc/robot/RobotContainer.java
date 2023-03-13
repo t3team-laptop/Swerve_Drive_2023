@@ -73,7 +73,9 @@ public class RobotContainer {
         eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
         eventMap.put("floorArm", new FloorPreset(elevatorPivot));
         eventMap.put("closeGripper", new CloseGripper(gripper));
-    }
+        eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+        eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
+}
 
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             s_Swerve::getPose,
@@ -98,13 +100,26 @@ public class RobotContainer {
     private final PathPlannerTrajectory leaveScoreDock = PathPlanner.loadPath("Leave, Score, Dock",
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
 
+    private final PathPlannerTrajectory scoreLeftTwice = PathPlanner.loadPath("leftScoreTwice",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory leftScoreTwiceAndCharge = PathPlanner.loadPath("leftScoreTwiceAndCharge",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory MiddlePlaceAndCharge = PathPlanner.loadPath("MiddlePlaceAndCharge",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final PathPlannerTrajectory RightScoreTwo = PathPlanner.loadPath("RightScoreTwo",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+
     // Commands //
-    CeilingPreset ceil;
     RepeatCommand repeatExt;
     RepeatCommand repeatRet;
     FloorPreset floor;
     MiddlePreset middle;
     TopPreset top;
+    ResetArm resetArm;
 
     CloseGripper closeGripper;
     OpenGripper openGripper;
@@ -135,9 +150,6 @@ public class RobotContainer {
                 new ElevatorExtend(
                         elevatorExtension,
                         () -> armDriver.getRawAxis(extensionAxis)));
-
-        ceil = new CeilingPreset(elevatorPivot);
-        ceil.addRequirements(elevatorPivot);
         floor = new FloorPreset(elevatorPivot);
         floor.addRequirements(elevatorPivot);
         middle = new MiddlePreset(elevatorPivot, elevatorExtension);
@@ -146,6 +158,10 @@ public class RobotContainer {
         top = new TopPreset(elevatorPivot, elevatorExtension);
         top.addRequirements(elevatorPivot);
         top.addRequirements(elevatorExtension);
+        resetArm = new ResetArm(elevatorPivot, elevatorExtension);
+        resetArm.addRequirements(elevatorPivot);
+        resetArm.addRequirements(elevatorExtension);
+
 
         closeGripper = new CloseGripper(gripper);
         closeGripper.addRequirements(gripper);
@@ -191,19 +207,14 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /*
-         * Configure Driver Controller Buttons
-         * ALT.whileTrue(repeatRet);
-         * ART.whileTrue(repeatExt);
-         * AB.onTrue(ceil);
-         * AX.onTrue(floor);
-         * AY.onTrue(top);
-         * AA.onTrue(middle);
-         */
-
-        // ALB.onTrue(closeGripper);
-        // ARB.onTrue(openGripper);
-
+        ALT.whileTrue(repeatRet);
+        ART.whileTrue(repeatExt);
+        AX.onTrue(floor);
+        AY.onTrue(top);
+        AA.onTrue(middle);
+        ALB.onTrue(closeGripper);
+        ARB.onTrue(openGripper);
+        
         DX.onTrue(xLock);
 
         /* Driver Buttons */
@@ -217,6 +228,13 @@ public class RobotContainer {
         autoChooser.addOption("All Community Lvl 3", allCommunityLvl3);
         autoChooser.addOption("2 Community Lvl 3", twoCommunityLvl3);
         autoChooser.addOption("Leave, Score, Dock", leaveScoreDock);
+        autoChooser.addOption("leftScoreTwice", scoreLeftTwice);
+        autoChooser.addOption("leftScoreTwiceAndCharge", leftScoreTwiceAndCharge);
+        autoChooser.addOption("MiddlePlaceAndCharge", MiddlePlaceAndCharge);
+        autoChooser.addOption("RightScoreTwo", RightScoreTwo);
+
+
+
         SmartDashboard.putData(autoChooser);
     }
 

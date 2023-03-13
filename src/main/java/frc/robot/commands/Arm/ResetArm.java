@@ -5,14 +5,18 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ElevatorExtension;
 import frc.robot.subsystems.ElevatorPivot;
 
-public class CeilingPreset extends CommandBase {
-  ElevatorPivot elevator;
-  /** Creates a new CeilingPreset. */
-  public CeilingPreset(ElevatorPivot elevator) {
-    this.elevator = elevator;
-    addRequirements(elevator);
+public class ResetArm extends CommandBase {
+  private ElevatorPivot elevatorPivot;
+  private ElevatorExtension elevatorExtension;  
+  public ResetArm(ElevatorPivot elevatorPivot, ElevatorExtension elevatorExtension) {
+    this.elevatorPivot = elevatorPivot;
+    addRequirements(elevatorPivot);
+
+    this.elevatorExtension = elevatorExtension;
+    addRequirements(elevatorExtension);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -23,13 +27,15 @@ public class CeilingPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.goToPivotStow();
+    elevatorPivot.resetPivot();
+    elevatorExtension.resetExtension();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stopPivot();
+    elevatorPivot.stopPivot();
+    elevatorExtension.stopExtension();
   }
 
   // Returns true when the command should end.

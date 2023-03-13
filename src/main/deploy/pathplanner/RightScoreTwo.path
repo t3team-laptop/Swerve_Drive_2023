@@ -1,0 +1,90 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8780516504055305,
+        "y": 1.0510503267084166
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3463465770862175,
+        "y": 0.853001243574742
+      },
+      "holonomicAngle": -178.33971763101704,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "setcubeLvl3",
+          "releaseGripper",
+          "resetArm"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.364887775192561,
+        "y": 0.9212940308622157
+      },
+      "prevControl": {
+        "x": 4.5346410758882625,
+        "y": 0.764220620101026
+      },
+      "nextControl": {
+        "x": 7.36122538054046,
+        "y": 1.0068006163958043
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8780516504055305,
+        "y": 0.5320251433236152
+      },
+      "prevControl": {
+        "x": 4.758055287373994,
+        "y": 0.7608059807366527
+      },
+      "nextControl": null,
+      "holonomicAngle": -179.3634064240365,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "setconeLvl3",
+          "releaseGripper"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 1.1515151515151916,
+      "names": [
+        "floorArm",
+        "closeGripper",
+        "resetArm"
+      ]
+    }
+  ]
+}

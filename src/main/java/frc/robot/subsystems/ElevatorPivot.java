@@ -57,7 +57,10 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor.setSelectedSensorPosition(0);
   }
   public void goToPivotGround(){
-    
+    rightPivotMotor.set(ControlMode.Position, 0); //TODO: CONFIG POSITION
+  }
+  public void resetPivot(){
+    rightPivotMotor.set(ControlMode.Position, 0); //TODO: CONFIG POSITION TO ALL THE WAY UP.
   }
   @Override
   public void periodic() {

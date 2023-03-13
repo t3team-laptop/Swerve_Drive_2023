@@ -58,6 +58,9 @@ public class ElevatorExtension extends SubsystemBase {
   public void stopExtension(){
     rightExtensionMotor.set(ControlMode.PercentOutput, 0);
   }
+  public void resetExtension(){
+  rightExtensionMotor.set(ControlMode.Position,0); // TODO: set to all the way closed
+  }
 
   public void resetExtensionEncoder(){
     rightExtensionMotor.setSelectedSensorPosition(0);
