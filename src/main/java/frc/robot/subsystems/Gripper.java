@@ -15,15 +15,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Gripper extends SubsystemBase {
-  private PneumaticHub pneumaticHub;
   private Compressor compressor;
   private DoubleSolenoid mSolenoid;
   /** Creates a new Gripper. */
   public Gripper() {
-    pneumaticHub = new PneumaticHub();
     compressor = new Compressor(PneumaticsModuleType.REVPH);
-    mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     compressor.enableDigital();
+    mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     open();
   }
 

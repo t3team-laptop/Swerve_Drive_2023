@@ -61,7 +61,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final ElevatorPivot elevatorPivot = new ElevatorPivot();
     private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
-    private final Gripper gripper = new Gripper();
+   // private final Gripper gripper = new Gripper();
 
     /* Autonomous Mode Chooser */
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
@@ -70,10 +70,10 @@ public class RobotContainer {
     private static Map<String, Command> eventMap = new HashMap<>();
     {
         eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-        eventMap.put("releaseGripper", new OpenGripper(gripper));
+      //  eventMap.put("releaseGripper", new OpenGripper(gripper));
         eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
         eventMap.put("floorArm", new FloorPreset(elevatorPivot));
-        eventMap.put("closeGripper", new CloseGripper(gripper));
+       // eventMap.put("closeGripper", new CloseGripper(gripper));
         eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
         eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
 }
@@ -120,8 +120,8 @@ public class RobotContainer {
     TopPreset top;
     ResetArm resetArm;
 
-    CloseGripper closeGripper;
-    OpenGripper openGripper;
+   // CloseGripper closeGripper;
+    // OpenGripper openGripper;
 
     XLock xLock;
 
@@ -162,10 +162,10 @@ public class RobotContainer {
         resetArm.addRequirements(elevatorExtension);
 
 
-        closeGripper = new CloseGripper(gripper);
-        closeGripper.addRequirements(gripper);
-        openGripper = new OpenGripper(gripper);
-        openGripper.addRequirements(gripper);
+      //  closeGripper = new CloseGripper(gripper);
+      //  closeGripper.addRequirements(gripper);
+      //  openGripper = new OpenGripper(gripper);
+      //  openGripper.addRequirements(gripper);
 
         // Declare Driver Controller Buttons
         DA = new JoystickButton(baseDriver, 1);
@@ -205,15 +205,12 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */                                                 
     private void configureButtonBindings() {
-        AX.onTrue(floor);
-        AY.onTrue(top);
-        AA.onTrue(middle);
-        AB.onTrue(resetArm);
+       // AX.onTrue(floor);
+        //AY.onTrue(top);
+        //AA.onTrue(middle);
+       // AB.onTrue(resetArm);
         //ALB.onTrue(closeGripper);
         //ARB.onTrue(openGripper);
-        
-        DX.onTrue(xLock);
-
         /*  Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         DX.onTrue(xLock);
