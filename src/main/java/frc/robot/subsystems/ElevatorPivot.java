@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -39,16 +39,16 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor.set(ControlMode.Velocity,pivotVelocity);
   }
 
-  public void goToPivotScore(){
-    rightPivotMotor.set(ControlMode.Position,0); //TODO: CONFIG POSITION
+  public void goToPivotHighGoal(){
+    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEHIGH.getPivot()); //TODO: CONFIG POSITION
   }
 
-  public void goToPivotPreScore(){
-    rightPivotMotor.set(ControlMode.Position,0);//TODO: CONFIG POSITION
+  public void goToPivotMidGoal(){
+    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEMID.getPivot());//TODO: CONFIG POSITION
   }
 
   public void goToPivotStow(){
-    rightPivotMotor.set(ControlMode.Position,0);//TODO: CONFIG POSITION
+    rightPivotMotor.set(ControlMode.Position,Constants.Position.STANDBY.getPivot());//TODO: CONFIG POSITION
   }
   public void stopPivot(){
     rightPivotMotor.set(ControlMode.PercentOutput,0);
@@ -57,13 +57,17 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor.setSelectedSensorPosition(0);
   }
   public void goToPivotGround(){
-    rightPivotMotor.set(ControlMode.Position, 0); //TODO: CONFIG POSITION
+    rightPivotMotor.set(ControlMode.Position, Constants.Position.FLOOR.getPivot()); //TODO: CONFIG POSITION
   }
   public void resetPivot(){
     rightPivotMotor.set(ControlMode.Position, 0); //TODO: CONFIG POSITION TO ALL THE WAY UP.
   }
+  public double getPivotMotorPosition() {
+    return rightPivotMotor.getSelectedSensorPosition();
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pivot Motor Position: ", getPivotMotorPosition());
   }
 }

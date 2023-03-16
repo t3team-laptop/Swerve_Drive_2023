@@ -19,13 +19,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.robot.Constants.GamePiece;
+import frc.robot.Constants.LEDs.LEDMode;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.Arm.*;
 import frc.robot.commands.Gripper.CloseGripper;
 import frc.robot.commands.Gripper.OpenGripper;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.LEDs.LEDs;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -55,13 +57,14 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(baseDriver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(baseDriver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton robotCentric = new JoystickButton(baseDriver, 8);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final ElevatorPivot elevatorPivot = new ElevatorPivot();
     private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
     private final Gripper gripper = new Gripper();
+    private final LEDs leds = new LEDs();
 
     /* Autonomous Mode Chooser */
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
@@ -125,6 +128,11 @@ public class RobotContainer {
 
     XLock xLock;
 
+    AutoBalancing autoBalance;
+
+    YellowLEDs yellowLEDs;
+    PurpleLEDs purpleLEDs;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -140,16 +148,16 @@ public class RobotContainer {
         xLock = new XLock(s_Swerve);
         xLock.addRequirements(s_Swerve);
 
-       // elevatorPivot.setDefaultCommand(
-          //      new ManualPivot(
-         //               elevatorPivot,
-                    //    () -> armDriver.getRawAxis(pivotAxis)));
+        elevatorPivot.setDefaultCommand(
+                new ManualPivot(
+                        elevatorPivot,
+                        () -> armDriver.getRawAxis(pivotAxis)));
 
-      //  elevatorExtension.setDefaultCommand(
-       //         new ElevatorExtend(
-        //                elevatorExtension,
-          //              () -> armDriver.getRawAxis(extensionAxis)));
-          
+        elevatorExtension.setDefaultCommand(
+                new ElevatorExtend(
+                        elevatorExtension,
+                        () -> armDriver.getRawAxis(extensionAxis)));
+
         floor = new FloorPreset(elevatorPivot);
         floor.addRequirements(elevatorPivot);
         middle = new MiddlePreset(elevatorPivot, elevatorExtension);
@@ -168,6 +176,13 @@ public class RobotContainer {
         openGripper = new OpenGripper(gripper);
         openGripper.addRequirements(gripper);
 
+        autoBalance = new AutoBalancing(s_Swerve, true);
+        autoBalance.addRequirements(s_Swerve);
+
+        yellowLEDs = new YellowLEDs(leds);
+        yellowLEDs.addRequirements(leds);
+        purpleLEDs = new PurpleLEDs(leds);
+        purpleLEDs.addRequirements(leds);
         // Declare Driver Controller Buttons
         DA = new JoystickButton(baseDriver, 1);
         DB = new JoystickButton(baseDriver, 2);
@@ -206,13 +221,16 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */                                                 
     private void configureButtonBindings() {
-       // AX.onTrue(floor);
-        //AY.onTrue(top);
-        //AA.onTrue(middle);
-       // AB.onTrue(resetArm);
-        ALB.onTrue(closeGripper);
-        ARB.onTrue(openGripper);
+        AX.onTrue(floor);
+        AY.onTrue(top);
+        AA.onTrue(middle);
+        AB.onTrue(resetArm);
+        ART.onTrue(closeGripper);
+        ALT.onTrue(openGripper);
+        ALB.onTrue(yellowLEDs);
+        ARB.onTrue(purpleLEDs);
         /*  Driver Buttons */
+        DM1.onTrue(autoBalance);
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         DX.onTrue(xLock);
     }
@@ -238,6 +256,7 @@ public class RobotContainer {
          */
         public void disabledInit() {
             s_Swerve.resetModulesToAbsolute();
+            leds.setLEDMode(LEDMode.WHITEDOT);
     }
     
     /**

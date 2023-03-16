@@ -14,7 +14,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.WPILibVersion;
 import frc.lib.util.COTSFalconSwerveConstants;
+import frc.lib.util.HSV;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
@@ -190,6 +192,51 @@ public final class Constants {
                       0, 0,
                       0));
     }
+    public enum Position {
+
+      HIGH(0, 0),
+      CONEHIGH(.134327, 35),
+      CUBEHIGH(1.55, 35),
+      MID(0, 0),
+      CONEMID(.104327, 23),
+      CUBEMID(1.427, 16.5),
+      FLOOR(.5236, .25),
+      STANDBY(1.1765, .25),
+      CUBEINTAKE(0.0, 0.3),
+      STANDINGCONEINTAKE(5.106, 14.380),
+      TIPPEDCONEINTAKE(5.572, 1.333),
+      HUMANPLAYERINTAKE(.8763, 1.5);
+
+      private double pivotPos;
+        private double extendPos;
+
+        private Position(double pivot, double extend) {
+            this.pivotPos = pivot;
+            this.extendPos = extend;
+        }
+
+        public double getPivot() {
+            return pivotPos;
+        }
+
+        public double getExtend() {
+            return extendPos;
+        }
+    }
+    public enum GamePiece {
+      CUBE(1),
+      CONE(-1);
+
+      private double direction;
+
+      private GamePiece(double value) {
+          direction = value;
+      }
+
+      public double getDirection() {
+          return direction;
+      }
+  }
   
     public static final class AprilTags {
       public static final AprilTag tag1 = new AprilTag(1, FieldConstants.aprilTags.get(1));
@@ -247,4 +294,38 @@ public final class Constants {
         }
         
       }
+      public static final class LEDs {
+        public static final int id = 9;
+        public static final int length = 18;
+
+        public static final LEDMode defaultMode = LEDMode.WHITEDOT;
+
+        public static final class Flash {
+            public static final double speed = 5;
+        }
+        public static final class WhiteDot{
+          public static final HSV hsv = HSV.googleColorPickerHSV(44, 0, 100);
+
+          public static final int pauseBetween = 0;
+          public static final int length = 0;
+          public static final double spread = 2;
+          public static final double speed = .5;
+        }
+        public enum LEDMode {
+            WHITEDOT("White Dot"),
+            PURPLEFLASH("Purple Flash"),
+            YELLOWFLASH("Yellow Flash");
+
+            private String name;
+
+            private LEDMode(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public String toString() {
+                return name;
+            }
+        }
+  }
 }

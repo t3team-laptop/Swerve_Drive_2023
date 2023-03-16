@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -44,15 +45,15 @@ public class ElevatorExtension extends SubsystemBase {
   }
 
   public void goToExtensionStow(){
-    rightExtensionMotor.set(ControlMode.Position, 0); // might not work TODO: CHANGE VALUE
+    rightExtensionMotor.set(ControlMode.Position, Constants.Position.STANDBY.getExtend()); // might not work TODO: CHANGE VALUE
   }
 
   public void goToExtensionMidGoal(){
-    rightExtensionMotor.set(ControlMode.Position,0);  // might not work TODO: CHANGE VALUE
+    rightExtensionMotor.set(ControlMode.Position, Constants.Position.MID.getExtend());  // might not work TODO: CHANGE VALUE
   }
 
   public void goToExtensionHighGoal(){
-    rightExtensionMotor.set(ControlMode.Position,0); // might not work TODO: CHANGE VALUE
+    rightExtensionMotor.set(ControlMode.Position,Constants.Position.CONEHIGH.getExtend()); // might not work TODO: CHANGE VALUE
   }
 
   public void stopExtension(){
@@ -69,6 +70,7 @@ public class ElevatorExtension extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pivot Motor Position: ", getExtensionMotorPosition());
   }
 
   public double getExtensionMotorPosition() {
