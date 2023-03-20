@@ -61,8 +61,8 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final ElevatorPivot elevatorPivot = new ElevatorPivot();
-    private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
+   // private final ElevatorPivot elevatorPivot = new ElevatorPivot();
+    //private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
     private final Gripper gripper = new Gripper();
     private final LEDs leds = new LEDs();
 
@@ -72,13 +72,13 @@ public class RobotContainer {
     /* Autonomous */
     private static Map<String, Command> eventMap = new HashMap<>();
     {
-        eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+       // eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
         eventMap.put("releaseGripper", new OpenGripper(gripper));
         eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
-        eventMap.put("floorArm", new FloorPreset(elevatorPivot));
+       // eventMap.put("floorArm", new FloorPreset(elevatorPivot));
         eventMap.put("closeGripper", new CloseGripper(gripper));
-        eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-        eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
+       // eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+       // eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
 }
 
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -148,16 +148,16 @@ public class RobotContainer {
         xLock = new XLock(s_Swerve);
         xLock.addRequirements(s_Swerve);
 
-        elevatorPivot.setDefaultCommand(
-                new ManualPivot(
-                        elevatorPivot,
-                        () -> armDriver.getRawAxis(pivotAxis)));
+      //  elevatorPivot.setDefaultCommand(
+      //          new ManualPivot(
+       //                 elevatorPivot,
+        //                () -> armDriver.getRawAxis(pivotAxis)));
 
-        elevatorExtension.setDefaultCommand(
-                new ElevatorExtend(
-                        elevatorExtension,
-                        () -> armDriver.getRawAxis(extensionAxis)));
-
+       // elevatorExtension.setDefaultCommand(
+      //          new ElevatorExtend(
+      //                  elevatorExtension,
+       //                 () -> armDriver.getRawAxis(extensionAxis)));
+/*
         floor = new FloorPreset(elevatorPivot);
         floor.addRequirements(elevatorPivot);
         middle = new MiddlePreset(elevatorPivot, elevatorExtension);
@@ -170,7 +170,7 @@ public class RobotContainer {
         resetArm.addRequirements(elevatorPivot);
         resetArm.addRequirements(elevatorExtension);
 
-
+*/
         closeGripper = new CloseGripper(gripper);
         closeGripper.addRequirements(gripper);
         openGripper = new OpenGripper(gripper);
@@ -221,10 +221,10 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */                                                 
     private void configureButtonBindings() {
-        AX.onTrue(floor);
-        AY.onTrue(top);
-        AA.onTrue(middle);
-        AB.onTrue(resetArm);
+      //  AX.onTrue(floor);
+        //AY.onTrue(top);
+        //AA.onTrue(middle);
+        //AB.onTrue(resetArm);
         ART.onTrue(closeGripper);
         ALT.onTrue(openGripper);
         //ALB.onTrue(yellowLEDs);
