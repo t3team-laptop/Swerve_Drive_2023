@@ -17,24 +17,23 @@ import frc.robot.Constants;
 
 public class Gripper extends SubsystemBase {
   private PneumaticHub pneumaticHub;
-  private DoubleSolenoid mSolenoid;
+  //private DoubleSolenoid mSolenoid;
   private boolean open = true;
   /** Creates a new Gripper. */
   public Gripper() {
     pneumaticHub = new PneumaticHub(Constants.PneumaticHubID);
     pneumaticHub.enableCompressorDigital();
-    mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 0);
-    System.out.println("Hub ID: " + Constants.PneumaticHubID);
-    System.out.println(pneumaticHub);
-    //System.out.println("Worked");
+    pneumaticHub.clearStickyFaults();
+    pneumaticHub.makeDoubleSolenoid(0, 7);
+   // mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 7);
   }
 
-  public void close(){
-    mSolenoid.set(Value.kForward);
+  public void open(){
+    pneumaticHub.setSolenoids(pneumaticHub.getSolenoids(), 1);
     open = false;
   }
-  public void open(){
-    mSolenoid.set(Value.kReverse);
+  public void close(){
+    pneumaticHub.setSolenoids(7, 1);
     open = true;
   }
   @Override
