@@ -61,8 +61,8 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-   // private final ElevatorPivot elevatorPivot = new ElevatorPivot();
-    //private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
+    private final ElevatorPivot elevatorPivot = new ElevatorPivot();
+    private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
     private final Gripper gripper = new Gripper();
     private final LEDs leds = new LEDs();
 
@@ -148,16 +148,16 @@ public class RobotContainer {
         xLock = new XLock(s_Swerve);
         xLock.addRequirements(s_Swerve);
 
-      //  elevatorPivot.setDefaultCommand(
-      //          new ManualPivot(
-       //                 elevatorPivot,
-        //                () -> armDriver.getRawAxis(pivotAxis)));
+        elevatorPivot.setDefaultCommand(
+                new ManualPivot(
+                        elevatorPivot,
+                        () -> armDriver.getRawAxis(pivotAxis)));
 
-       // elevatorExtension.setDefaultCommand(
-      //          new ElevatorExtend(
-      //                  elevatorExtension,
-       //                 () -> armDriver.getRawAxis(extensionAxis)));
-/*
+        elevatorExtension.setDefaultCommand(
+                new ElevatorExtend(
+                        elevatorExtension,
+                        () -> armDriver.getRawAxis(extensionAxis)));
+
         floor = new FloorPreset(elevatorPivot);
         floor.addRequirements(elevatorPivot);
         middle = new MiddlePreset(elevatorPivot, elevatorExtension);
@@ -170,7 +170,7 @@ public class RobotContainer {
         resetArm.addRequirements(elevatorPivot);
         resetArm.addRequirements(elevatorExtension);
 
-*/
+
         closeGripper = new CloseGripper(gripper);
         closeGripper.addRequirements(gripper);
         openGripper = new OpenGripper(gripper);

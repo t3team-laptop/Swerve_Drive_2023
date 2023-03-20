@@ -21,13 +21,13 @@ public class ElevatorPivot extends SubsystemBase {
   public ElevatorPivot() {
     leftPivotMotor = new TalonFX(Constants.ElevatorPivotLeftID);
     rightPivotMotor = new TalonFX(Constants.ElevatorPivotRightID);
-    leftPivotMotor.follow(rightPivotMotor);
+    //leftPivotMotor.follow(rightPivotMotor);
     rightPivotMotor.configFactoryDefault();
     rightPivotMotor.setNeutralMode(NeutralMode.Brake);
     rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
     //rightPivotMotor.setSensorPhase(true); use if motor forwards and backwards is wack
-    //rightPivotMotor.setInverted(true); set true if motor spins wrong way
+    rightPivotMotor.setInverted(true); 
 
     rightPivotMotor.configForwardSoftLimitThreshold(1000); //set to whatever limits are needed
     rightPivotMotor.configReverseSoftLimitThreshold(1000); //^
@@ -36,11 +36,8 @@ public class ElevatorPivot extends SubsystemBase {
   
   }
   public void pivotUp(double val){
-    rightPivotMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
-  }
-
-  public void pivotDown(double val){
-    rightPivotMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
+    rightPivotMotor.set(ControlMode.PercentOutput, val); 
+    leftPivotMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
   }
 
   public void goToPivotHighGoal(){

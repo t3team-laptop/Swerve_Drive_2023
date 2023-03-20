@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Timer;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -17,23 +19,23 @@ import frc.robot.Constants;
 
 public class Gripper extends SubsystemBase {
   private PneumaticHub pneumaticHub;
-  //private DoubleSolenoid mSolenoid;
+ private DoubleSolenoid mSolenoid;
   private boolean open = true;
   /** Creates a new Gripper. */
   public Gripper() {
     pneumaticHub = new PneumaticHub(Constants.PneumaticHubID);
     pneumaticHub.enableCompressorDigital();
-    pneumaticHub.clearStickyFaults();
-    pneumaticHub.makeDoubleSolenoid(0, 7);
-   // mSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 7);
+    mSolenoid = pneumaticHub.makeDoubleSolenoid(0, 7);
   }
 
-  public void open(){
-    pneumaticHub.setSolenoids(pneumaticHub.getSolenoids(), 1);
-    open = false;
-  }
   public void close(){
-    pneumaticHub.setSolenoids(7, 1);
+    mSolenoid.set(Value.kForward);
+    open = false;
+
+  }
+  public void open(){
+    //pneumaticHub.setSolenoids(7, 1);
+   mSolenoid.set(Value.kReverse);
     open = true;
   }
   @Override

@@ -23,13 +23,13 @@ public class ElevatorExtension extends SubsystemBase {
   public ElevatorExtension(){
     leftExtensionMotor = new TalonFX(Constants.ElevatorExtensionLeftID);        // TODO: add proper IDs for the motor
     rightExtensionMotor = new TalonFX(Constants.ElevatorExtensionRightID);      // TODO: add proper IDs for the motor
-    leftExtensionMotor.follow(rightExtensionMotor); //sets right motor to master and tells left motor to follow
+    //leftExtensionMotor.follow(rightExtensionMotor); //sets right motor to master and tells left motor to follow
     rightExtensionMotor.configFactoryDefault();
     rightExtensionMotor.setNeutralMode(NeutralMode.Brake);
     rightExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
     //rightExtensionMotor.setSensorPhase(true); use if forwards and backwards is wacky
-    //rightExtensionMotor.setInverted(true); // if motors go wrong way set to true
+    leftExtensionMotor.setInverted(true); // if motors go wrong way set to true
     rightExtensionMotor.configForwardSoftLimitThreshold(1000); //set to whatever limits are needed
     rightExtensionMotor.configReverseSoftLimitThreshold(1000); //^
     rightExtensionMotor.configForwardSoftLimitEnable(true, 0); 
@@ -37,11 +37,9 @@ public class ElevatorExtension extends SubsystemBase {
   }
   
   public void extend(double val){
-    rightExtensionMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
-  }
-
-  public void retract(double val){
-    rightExtensionMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
+    rightExtensionMotor.set(ControlMode.PercentOutput, val);
+    leftExtensionMotor.set(ControlMode.PercentOutput, val);
+     // TODO Adjust output to something that works
   }
 
   public void goToExtensionStow(){
