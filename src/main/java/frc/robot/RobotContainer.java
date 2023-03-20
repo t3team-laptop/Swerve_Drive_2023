@@ -190,8 +190,6 @@ public class RobotContainer {
         DY = new JoystickButton(baseDriver, 4);
         DLB = new JoystickButton(baseDriver, 5);
         DRB = new JoystickButton(baseDriver, 6);
-        DLT = new JoystickButton(baseDriver, 2);
-        DRT = new JoystickButton(baseDriver, 3);
         DM1 = new JoystickButton(baseDriver, 7);
         DM2 = new JoystickButton(baseDriver, 8);
 
@@ -202,10 +200,8 @@ public class RobotContainer {
         AY = new JoystickButton(armDriver, 4);
         ALB = new JoystickButton(armDriver, 5);
         ARB = new JoystickButton(armDriver, 6);
-        ALT = new JoystickButton(armDriver, 2);
-        ART = new JoystickButton(armDriver, 3);
-        AM1 = new JoystickButton(armDriver, 7);
-        AM2 = new JoystickButton(armDriver, 8);
+        AM1 = new JoystickButton(armDriver, 9);
+        AM2 = new JoystickButton(armDriver, 10);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -225,10 +221,10 @@ public class RobotContainer {
         //AY.onTrue(top);
         //AA.onTrue(middle);
         //AB.onTrue(resetArm);
-        ART.onTrue(closeGripper);
-        ALT.onTrue(openGripper);
-        //ALB.onTrue(yellowLEDs);
-        //ARB.onTrue(purpleLEDs);
+        ARB.onTrue(new CloseGripper(gripper));
+        ALB.onTrue(new OpenGripper(gripper));
+        //AM1.onTrue(yellowLEDs);
+        //AM2.onTrue(purpleLEDs);
         /*  Driver Buttons */
         DM1.onTrue(autoBalance);
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
