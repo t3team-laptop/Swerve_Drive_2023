@@ -33,7 +33,12 @@ public class ManualPivot extends CommandBase {
   public void execute() {
     double yVal = MathUtil.applyDeadband(ySup.getAsDouble(), Constants.stickDeadband);
 
-    elevator.manual(yVal);
+    if(yVal > 0){
+    elevator.pivotUp(yVal);
+    }
+    else if(yVal < 0){
+      elevator.pivotDown(yVal);
+    }
   }
 
   // Called once the command ends or is interrupted.

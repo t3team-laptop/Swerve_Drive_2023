@@ -35,8 +35,12 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor.configReverseSoftLimitEnable(true, 0); 
   
   }
-  public void manual(double pivotVelocity){
-    rightPivotMotor.set(ControlMode.Velocity,pivotVelocity);
+  public void pivotUp(double val){
+    rightPivotMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
+  }
+
+  public void pivotDown(double val){
+    rightPivotMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
   }
 
   public void goToPivotHighGoal(){

@@ -31,7 +31,12 @@ public class ElevatorExtend extends CommandBase {
   @Override
   public void execute() {
     double axisVal = MathUtil.applyDeadband(axisSup.getAsDouble(), Constants.stickDeadband);
+    if(axisVal > 0){
     elevator.extend(axisVal);
+    }
+    else if(axisVal < 0){
+      elevator.retract(axisVal);
+    }
 
   }
 

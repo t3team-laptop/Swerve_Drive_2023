@@ -37,11 +37,11 @@ public class ElevatorExtension extends SubsystemBase {
   }
   
   public void extend(double val){
-    rightExtensionMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
+    rightExtensionMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
   }
 
   public void retract(double val){
-    rightExtensionMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
+    rightExtensionMotor.set(ControlMode.PercentOutput, val*100); // TODO Adjust output to something that works
   }
 
   public void goToExtensionStow(){
@@ -70,7 +70,7 @@ public class ElevatorExtension extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Motor Position: ", getExtensionMotorPosition());
+    SmartDashboard.putNumber("Extension Motor Position: ", getExtensionMotorPosition());
   }
 
   public double getExtensionMotorPosition() {

@@ -227,8 +227,8 @@ public class RobotContainer {
         AB.onTrue(resetArm);
         ART.onTrue(closeGripper);
         ALT.onTrue(openGripper);
-        ALB.onTrue(yellowLEDs);
-        ARB.onTrue(purpleLEDs);
+        //ALB.onTrue(yellowLEDs);
+        //ARB.onTrue(purpleLEDs);
         /*  Driver Buttons */
         DM1.onTrue(autoBalance);
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
