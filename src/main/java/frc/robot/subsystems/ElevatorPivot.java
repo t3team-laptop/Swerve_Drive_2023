@@ -46,10 +46,10 @@ public class ElevatorPivot extends SubsystemBase {
     leftPivotMotor.configForwardSoftLimitThreshold(leftLowerBound); //set to whatever limits are needed
     leftPivotMotor.configReverseSoftLimitThreshold(leftUpperBound);
 
-    rightPivotMotor.configForwardSoftLimitEnable(true, 0); 
-    rightPivotMotor.configReverseSoftLimitEnable(true, 0); 
-    leftPivotMotor.configForwardSoftLimitEnable(true, 0); 
-    leftPivotMotor.configReverseSoftLimitEnable(true, 0); 
+    rightPivotMotor.configForwardSoftLimitEnable(false, 0); 
+    rightPivotMotor.configReverseSoftLimitEnable(false, 0); 
+    leftPivotMotor.configForwardSoftLimitEnable(false, 0); 
+    leftPivotMotor.configReverseSoftLimitEnable(false, 0); 
   
   }
   public void manualPivot(double val){

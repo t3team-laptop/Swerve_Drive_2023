@@ -47,10 +47,10 @@ public class ElevatorExtension extends SubsystemBase {
     leftExtensionMotor.configForwardSoftLimitThreshold(leftLowerBound); //set to whatever limits are needed
     leftExtensionMotor.configReverseSoftLimitThreshold(leftUpperBound);
 
-    rightExtensionMotor.configForwardSoftLimitEnable(true, 0); 
-    rightExtensionMotor.configReverseSoftLimitEnable(true, 0); 
-    leftExtensionMotor.configForwardSoftLimitEnable(true, 0); 
-    leftExtensionMotor.configReverseSoftLimitEnable(true, 0); 
+    rightExtensionMotor.configForwardSoftLimitEnable(false, 0); 
+    rightExtensionMotor.configReverseSoftLimitEnable(false, 0); 
+    leftExtensionMotor.configForwardSoftLimitEnable(false, 0); 
+    leftExtensionMotor.configReverseSoftLimitEnable(false, 0); 
   }
   
   public void extend(double val){
