@@ -17,58 +17,72 @@ public class ElevatorPivot extends SubsystemBase {
   /** Creates a new ElevatorPivot. */
   private TalonFX leftPivotMotor;
   private TalonFX rightPivotMotor;
+  private int leftLowerBound = 0; 
+  private int leftUpperBound = 0;
+  private int rightLowerBound = 0;
+  private int rightUpperBound = 0;
 
   public ElevatorPivot() {
     leftPivotMotor = new TalonFX(Constants.ElevatorPivotLeftID);
     rightPivotMotor = new TalonFX(Constants.ElevatorPivotRightID);
     //leftPivotMotor.follow(rightPivotMotor);
     rightPivotMotor.configFactoryDefault();
+    leftPivotMotor.configFactoryDefault();
+
     rightPivotMotor.setNeutralMode(NeutralMode.Brake);
-    rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    leftPivotMotor.setNeutralMode(NeutralMode.Brake);
+
+    rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    leftPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+    rightPivotMotor.setSelectedSensorPosition(0);
+    leftPivotMotor.setSelectedSensorPosition(0);
 
     //rightPivotMotor.setSensorPhase(true); use if motor forwards and backwards is wack
     rightPivotMotor.setInverted(true); 
 
-    rightPivotMotor.configForwardSoftLimitThreshold(1000); //set to whatever limits are needed
-    rightPivotMotor.configReverseSoftLimitThreshold(1000); //^
+    rightPivotMotor.configForwardSoftLimitThreshold(rightLowerBound); //set to whatever limits are needed
+    rightPivotMotor.configReverseSoftLimitThreshold(rightUpperBound); //^
+    leftPivotMotor.configForwardSoftLimitThreshold(leftLowerBound); //set to whatever limits are needed
+    leftPivotMotor.configReverseSoftLimitThreshold(leftUpperBound);
+
     rightPivotMotor.configForwardSoftLimitEnable(true, 0); 
     rightPivotMotor.configReverseSoftLimitEnable(true, 0); 
+    leftPivotMotor.configForwardSoftLimitEnable(true, 0); 
+    leftPivotMotor.configReverseSoftLimitEnable(true, 0); 
   
   }
-  public void pivotUp(double val){
+  public void manualPivot(double val){
     rightPivotMotor.set(ControlMode.PercentOutput, val); 
     leftPivotMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
   }
 
   public void goToPivotHighGoal(){
-    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEHIGH.getPivot()); //TODO: CONFIG POSITION
+    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
+    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEHIGH.getPivot());
   }
 
   public void goToPivotMidGoal(){
+    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
     rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEMID.getPivot());//TODO: CONFIG POSITION
   }
 
   public void goToPivotStow(){
+    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
     rightPivotMotor.set(ControlMode.Position,Constants.Position.STANDBY.getPivot());//TODO: CONFIG POSITION
   }
   public void stopPivot(){
     rightPivotMotor.set(ControlMode.PercentOutput,0);
-  }
-  public void resetPivotEncoder(){
-    rightPivotMotor.setSelectedSensorPosition(0);
+    leftPivotMotor.set(ControlMode.PercentOutput,0);
   }
   public void goToPivotGround(){
+    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
     rightPivotMotor.set(ControlMode.Position, Constants.Position.FLOOR.getPivot()); //TODO: CONFIG POSITION
   }
-  public void resetPivot(){
-    rightPivotMotor.set(ControlMode.Position, 0); //TODO: CONFIG POSITION TO ALL THE WAY UP.
-  }
-  public double getPivotMotorPosition() {
-    return rightPivotMotor.getSelectedSensorPosition();
-}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Motor Position: ", getPivotMotorPosition());
+    SmartDashboard.putNumber("Right Pivot Motor Position: ", rightPivotMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Left Pivot Motor Position: ", leftPivotMotor.getSelectedSensorPosition());
   }
 }
