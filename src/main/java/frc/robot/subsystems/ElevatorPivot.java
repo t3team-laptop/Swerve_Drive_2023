@@ -26,7 +26,7 @@ public class ElevatorPivot extends SubsystemBase {
   private double motorPGain = .01;
   private double motorIGain = 0;
   private double motorDGain = 0;
-  private int kConfigurationTimeoutLimit = 5000;
+  private int kConfigurationTimeoutLimit = 5;
   private int kPivotMotorPIDSlot = 0;
 
 
@@ -35,8 +35,11 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor = new TalonFX(Constants.ElevatorPivotRightID);
     //leftPivotMotor.follow(rightPivotMotor);
     rightPivotMotor.configFactoryDefault();
+    leftPivotMotor.configFactoryDefault();
     rightPivotMotor.setNeutralMode(NeutralMode.Brake);
-    rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    leftPivotMotor.setNeutralMode(NeutralMode.Brake);
+    rightPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    leftPivotMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     //rightPivotMotor.setSensorPhase(true); use if motor forwards and backwards is wack
     rightPivotMotor.setInverted(true); 
@@ -59,6 +62,8 @@ public class ElevatorPivot extends SubsystemBase {
     leftPivotMotor.config_kI(kPivotMotorPIDSlot, motorIGain, kConfigurationTimeoutLimit);
     leftPivotMotor.config_kD(kPivotMotorPIDSlot, motorIGain, kConfigurationTimeoutLimit);
 
+    rightPivotMotor.setSelectedSensorPosition(0);
+    leftPivotMotor.setSelectedSensorPosition(0);
 
   }
   public void pivotUp(double val){

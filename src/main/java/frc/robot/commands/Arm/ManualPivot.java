@@ -32,7 +32,7 @@ public class ManualPivot extends CommandBase {
   @Override
   public void execute() {
     double yVal = MathUtil.applyDeadband(ySup.getAsDouble(), Constants.stickDeadband);
-    elevator.pivotUp(yVal);
+    elevator.pivotUp(yVal*100);
 
   }
 
