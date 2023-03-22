@@ -41,6 +41,7 @@ public class ElevatorExtension extends SubsystemBase {
 
     //rightExtensionMotor.setSensorPhase(true); use if forwards and backwards is wacky
     leftExtensionMotor.setInverted(true); // if motors go wrong way set to true
+    rightExtensionMotor.follow(leftExtensionMotor);
 
     rightExtensionMotor.configForwardSoftLimitThreshold(rightLowerBound); //set to whatever limits are needed
     rightExtensionMotor.configReverseSoftLimitThreshold(rightUpperBound); //^
@@ -54,7 +55,7 @@ public class ElevatorExtension extends SubsystemBase {
   }
   
   public void extend(double val){
-    rightExtensionMotor.set(ControlMode.PercentOutput, val);
+    //rightExtensionMotor.set(ControlMode.PercentOutput, val);
     leftExtensionMotor.set(ControlMode.PercentOutput, val);
      // TODO Adjust output to something that works
   }

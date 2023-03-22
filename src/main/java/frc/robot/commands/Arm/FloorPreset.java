@@ -5,6 +5,7 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorPivot;
 
 public class FloorPreset extends CommandBase {
@@ -23,7 +24,7 @@ public class FloorPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.goToPivotGround();
+    //elevator.leftPivotPos = Constants.Position.FLOOR.getPivot();
   }
 
   // Called once the command ends or is interrupted.

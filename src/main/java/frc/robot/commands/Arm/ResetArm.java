@@ -5,6 +5,7 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorExtension;
 import frc.robot.subsystems.ElevatorPivot;
 
@@ -27,7 +28,7 @@ public class ResetArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorPivot.goToPivotStow();
+    //elevatorPivot.leftPivotPos = Constants.Position.STANDBY.getPivot();
     elevatorExtension.resetExtension();
   }
 

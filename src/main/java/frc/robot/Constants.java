@@ -43,6 +43,16 @@ public final class Constants {
     // Gripper 
     public static final int PneumaticHubID = 11;
 
+    public static final class Elevator {
+      public static final double elevatorKP = 1.5;
+      public static final double elevatorKI = .2;
+      public static final double elevatorKD = .05;
+
+      public static final double maxMotorVoltage = 5;
+
+      public static final int currentLimit = 30;
+
+  }
     public static final class Swerve {
         public static final int pigeonID = 0;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -97,6 +107,7 @@ public final class Constants {
         public static final double drivePitchKD = 0.000000000000001;
         public static final double drivePitchKFF = 0.000000000000001;
 
+  
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
         public static final double angleKI = chosenModule.angleKI;
@@ -117,9 +128,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.8; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 2; //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 2; //TODO: This must be tuned to specific robot
 
         /* Swerve Limiting Values */
         public static final double autoCenterLimit = .3;
@@ -195,7 +206,7 @@ public final class Constants {
     public enum Position {
 
       HIGH(0, 0),
-      CONEHIGH(.134327, 35),
+      CONEHIGH(505111.000000, -121697.000000),
       CUBEHIGH(1.55, 35),
       MID(0, 0),
       CONEMID(.104327, 23),

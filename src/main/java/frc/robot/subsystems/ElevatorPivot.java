@@ -9,8 +9,12 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Elevator;
+import frc.robot.Constants.Position;
 import frc.robot.Constants;
 
 public class ElevatorPivot extends SubsystemBase {
@@ -21,6 +25,10 @@ public class ElevatorPivot extends SubsystemBase {
   private int leftUpperBound = 0;
   private int rightLowerBound = 0;
   private int rightUpperBound = 0;
+  
+  public static double currentPosition;
+
+  private PIDController pidController;
 
   public ElevatorPivot() {
     leftPivotMotor = new TalonFX(Constants.ElevatorPivotLeftID);
@@ -40,7 +48,8 @@ public class ElevatorPivot extends SubsystemBase {
 
     //rightPivotMotor.setSensorPhase(true); use if motor forwards and backwards is wack
     rightPivotMotor.setInverted(true); 
-
+    rightPivotMotor.follow(leftPivotMotor);
+    
     rightPivotMotor.configForwardSoftLimitThreshold(rightLowerBound); //set to whatever limits are needed
     rightPivotMotor.configReverseSoftLimitThreshold(rightUpperBound); //^
     leftPivotMotor.configForwardSoftLimitThreshold(leftLowerBound); //set to whatever limits are needed
@@ -50,39 +59,55 @@ public class ElevatorPivot extends SubsystemBase {
     rightPivotMotor.configReverseSoftLimitEnable(false, 0); 
     leftPivotMotor.configForwardSoftLimitEnable(false, 0); 
     leftPivotMotor.configReverseSoftLimitEnable(false, 0); 
-  
+    
+    pidController = new PIDController(Constants.Elevator.elevatorKP, Constants.Elevator.elevatorKI, Constants.Elevator.elevatorKD);
+    pidController.setSetpoint(0);
+    pidController.setTolerance(.25);
+
+    setPosition(Position.STANDBY.getPivot());
   }
+     
   public void manualPivot(double val){
-    rightPivotMotor.set(ControlMode.PercentOutput, val); 
+    //rightPivotMotor.set(ControlMode.PercentOutput, val); 
     leftPivotMotor.set(ControlMode.PercentOutput, val); // TODO Adjust output to something that works
   }
-
-  public void goToPivotHighGoal(){
-    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
-    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEHIGH.getPivot());
+ 
+  public void setPosition(double position){
+    currentPosition = position;
   }
 
-  public void goToPivotMidGoal(){
-    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
-    rightPivotMotor.set(ControlMode.Position,Constants.Position.CONEMID.getPivot());//TODO: CONFIG POSITION
+  public double getPosition(){
+    return currentPosition;
   }
 
-  public void goToPivotStow(){
-    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
-    rightPivotMotor.set(ControlMode.Position,Constants.Position.STANDBY.getPivot());//TODO: CONFIG POSITION
+  public void move(double val){
+    leftPivotMotor.set(ControlMode.PercentOutput, val);
   }
+
+  public boolean reachedSetpoint(double distance){
+    return pidController.getPositionTolerance() >= Math.abs(currentPosition - distance);
+  }
+ 
+  
   public void stopPivot(){
     rightPivotMotor.set(ControlMode.PercentOutput,0);
     leftPivotMotor.set(ControlMode.PercentOutput,0);
   }
-  public void goToPivotGround(){
-    leftPivotMotor.set(ControlMode.Follower, Constants.ElevatorExtensionRightID);
-    rightPivotMotor.set(ControlMode.Position, Constants.Position.FLOOR.getPivot()); //TODO: CONFIG POSITION
+  
+  public double getEncoderPosition(){
+    return (leftPivotMotor.getSelectedSensorPosition() + rightPivotMotor.getSelectedSensorPosition()) /2.0;
+  }
+  
+  public boolean atSetpoint(){
+    return pidController.atSetpoint();
   }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Right Pivot Motor Position: ", rightPivotMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left Pivot Motor Position: ", leftPivotMotor.getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Elevator at setpoint", atSetpoint());
+    SmartDashboard.putNumber("Elevator Position", getEncoderPosition());
+    SmartDashboard.putNumber("Elevator Goal Position", currentPosition);
+
+        move(pidController.calculate(getEncoderPosition(), currentPosition));
   }
 }

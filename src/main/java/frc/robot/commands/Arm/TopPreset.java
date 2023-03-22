@@ -6,6 +6,7 @@ package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorExtension;
 
 public class TopPreset extends CommandBase {
@@ -28,7 +29,7 @@ public class TopPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorPivot.goToPivotHighGoal();
+    //elevatorPivot.leftPivotPos = Constants.Position.CONEHIGH.getPivot();
     elevatorExtension.goToExtensionHighGoal();
   }
 

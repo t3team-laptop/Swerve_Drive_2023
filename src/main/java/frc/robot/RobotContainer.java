@@ -72,13 +72,13 @@ public class RobotContainer {
     /* Autonomous */
     private static Map<String, Command> eventMap = new HashMap<>();
     {
-       // eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+        eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
         eventMap.put("releaseGripper", new OpenGripper(gripper));
         eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
-       // eventMap.put("floorArm", new FloorPreset(elevatorPivot));
+        eventMap.put("floorArm", new FloorPreset(elevatorPivot));
         eventMap.put("closeGripper", new CloseGripper(gripper));
-       // eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-       // eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
+        eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
+        eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
 }
 
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
