@@ -44,7 +44,7 @@ public final class Constants {
     public static final int PneumaticHubID = 11;
 
     public static final class Elevator {
-      public static final double elevatorKP = 1.5;
+      public static final double elevatorKP = .01;
       public static final double elevatorKI = .2;
       public static final double elevatorKD = .05;
 

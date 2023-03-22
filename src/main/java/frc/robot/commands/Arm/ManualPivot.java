@@ -31,16 +31,15 @@ public class ManualPivot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //double yVal = MathUtil.applyDeadband(ySup.getAsDouble(), Constants.stickDeadband);
-    //elevator.manualPivot(yVal);
-    double deadbandController = Math.abs(ySup.getAsDouble()) > .1 ? -ySup.getAsDouble() : 0;
-    elevator.setPosition((elevator.getPosition() + deadbandController * .2));
+    double yVal = MathUtil.applyDeadband(ySup.getAsDouble(), Constants.stickDeadband);
+    elevator.pivotUp(yVal);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    elevator.stopPivot();
   }
 
   // Returns true when the command should end.
