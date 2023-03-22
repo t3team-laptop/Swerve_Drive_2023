@@ -24,8 +24,8 @@ public class ElevatorExtension extends SubsystemBase {
   private int rightUpperBound = 0;
 
   public ElevatorExtension(){
-    leftExtensionMotor = new TalonFX(Constants.ElevatorExtensionLeftID);        // TODO: add proper IDs for the motor
-    rightExtensionMotor = new TalonFX(Constants.ElevatorExtensionRightID);      // TODO: add proper IDs for the motor
+    leftExtensionMotor = new TalonFX(Constants.ElevatorPivotLeftID);        // TODO: add proper IDs for the motor
+    rightExtensionMotor = new TalonFX(Constants.ElevatorPivotRightID);      // TODO: add proper IDs for the motor
     //leftExtensionMotor.follow(rightExtensionMotor); //sets right motor to master and tells left motor to follow
     rightExtensionMotor.configFactoryDefault();
     leftExtensionMotor.configFactoryDefault();

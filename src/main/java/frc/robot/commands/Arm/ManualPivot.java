@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Position;
 import frc.robot.subsystems.ElevatorPivot;
 
 public class ManualPivot extends CommandBase {
@@ -32,14 +33,14 @@ public class ManualPivot extends CommandBase {
   @Override
   public void execute() {
     double yVal = MathUtil.applyDeadband(ySup.getAsDouble(), Constants.stickDeadband);
-    elevator.pivotUp(yVal*100);
+    elevator.setPivotPosition(elevator.getEncoderPosition() + yVal);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stopPivot();
+    elevator.setArmState(Position.OFF);
   }
 
   // Returns true when the command should end.

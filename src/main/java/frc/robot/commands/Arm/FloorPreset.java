@@ -30,7 +30,7 @@ public class FloorPreset extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stopPivot();
+    //elevator.stopPivot();
   }
 
   // Returns true when the command should end.

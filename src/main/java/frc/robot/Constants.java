@@ -47,6 +47,7 @@ public final class Constants {
       public static final double elevatorKP = .01;
       public static final double elevatorKI = .2;
       public static final double elevatorKD = .05;
+      public static final double elevatorKF = 0;
 
       public static final double maxMotorVoltage = 5;
 
@@ -216,7 +217,8 @@ public final class Constants {
       CUBEINTAKE(0.0, 0.3),
       STANDINGCONEINTAKE(5.106, 14.380),
       TIPPEDCONEINTAKE(5.572, 1.333),
-      HUMANPLAYERINTAKE(.8763, 1.5);
+      HUMANPLAYERINTAKE(.8763, 1.5),
+      OFF(0,0);
 
       private double pivotPos;
         private double extendPos;
