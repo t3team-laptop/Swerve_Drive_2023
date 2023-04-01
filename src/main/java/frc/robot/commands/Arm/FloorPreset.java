@@ -6,14 +6,19 @@ package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Position;
+import frc.robot.subsystems.ElevatorExtension;
 import frc.robot.subsystems.ElevatorPivot;
 
 public class FloorPreset extends CommandBase {
-  private ElevatorPivot elevator;
+  private ElevatorPivot elevatorPivot;
+  private ElevatorExtension elevatorExtension;
   /** Creates a new FloorPreset. */
-  public FloorPreset(ElevatorPivot elevator) {
-    this.elevator = elevator;
+  public FloorPreset(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
+    this.elevatorPivot = elevator;
     addRequirements(elevator);
+    this.elevatorExtension = elevatorExtension;
+    addRequirements(elevatorExtension);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -24,7 +29,10 @@ public class FloorPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //elevator.leftPivotPos = Constants.Position.FLOOR.getPivot();
+    elevatorPivot.isPosition = true;
+    elevatorPivot.setArmState(Position.FLOOR);
+    elevatorExtension.isPosition = true;
+    elevatorExtension.setArmState(Position.FLOOR);
   }
 
   // Called once the command ends or is interrupted.

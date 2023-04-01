@@ -20,30 +20,32 @@ import frc.robot.Constants.Position;
 
 public class ElevatorPivot extends SubsystemBase {
   /** Creates a new ElevatorPivot. */
-  private TalonFX leftPivotMotor;
-  private TalonFX rightPivotMotor;
+  public TalonFX leftPivotMotor;
+  public TalonFX rightPivotMotor;
 
-  private int leftLowerBound = 0; 
-  private int leftUpperBound = 0;
+  private int leftLowerBound = 818133; 
+  private int leftUpperBound = -80872;
   private int rightLowerBound = 0;
   private int rightUpperBound = 0;
 
-  private Position rotateState;
+  public Position rotateState;
   private Debouncer setpointDebouncer;
   private boolean rotateEnableCurrentLimit = true;
   private int rotateContinuousCurrentLimit = 35;
-  private double rotatePeakCurrentLimit = 45;
+  private double rotatePeakCurrentLimit = 15;
   private double rotatePeakCurrentDuration = 0.1;
   private TalonFXConfiguration FXConfig = new TalonFXConfiguration();
   private SupplyCurrentLimitConfiguration rotateSupplyLimit = new SupplyCurrentLimitConfiguration(rotateEnableCurrentLimit, rotateContinuousCurrentLimit, rotatePeakCurrentLimit, rotatePeakCurrentDuration);
   private double setpointTolerance = 3000;
+  public boolean isPosition = false;
+  public double percentOutput = 0.0;
   public ElevatorPivot() {
     leftPivotMotor = new TalonFX(Constants.ElevatorPivotLeftID);
     rightPivotMotor = new TalonFX(Constants.ElevatorPivotRightID);
-    FXConfig.slot0.kP = Constants.Elevator.elevatorKP;
-    FXConfig.slot0.kI = Constants.Elevator.elevatorKI;
-    FXConfig.slot0.kD = Constants.Elevator.elevatorKD;
-    FXConfig.slot0.kF = Constants.Elevator.elevatorKF;
+    FXConfig.slot0.kP = Constants.Elevator.elevatorPivotKP;
+    FXConfig.slot0.kI = Constants.Elevator.elevatorPivotKI;
+    FXConfig.slot0.kD = Constants.Elevator.elevatorPivotKD;
+    FXConfig.slot0.kF = Constants.Elevator.elevatorPivotKF;
     FXConfig.supplyCurrLimit = rotateSupplyLimit;
     FXConfig.openloopRamp = 0.25;
     FXConfig.closedloopRamp = 0.2;
@@ -53,7 +55,17 @@ public class ElevatorPivot extends SubsystemBase {
 
 
     setpointDebouncer = new Debouncer(0.2, DebounceType.kRising);
-    rotateState = Position.STANDBY;
+    rotateState = Position.OFF;
+
+    rightPivotMotor.configForwardSoftLimitThreshold(rightLowerBound); //set to whatever limits are needed
+    rightPivotMotor.configReverseSoftLimitThreshold(rightUpperBound); //^
+    leftPivotMotor.configForwardSoftLimitThreshold(leftLowerBound); //set to whatever limits are needed
+    leftPivotMotor.configReverseSoftLimitThreshold(leftUpperBound);
+
+    rightPivotMotor.configForwardSoftLimitEnable(false, 0); 
+    rightPivotMotor.configReverseSoftLimitEnable(false, 0); 
+    leftPivotMotor.configForwardSoftLimitEnable(false, 0); 
+    leftPivotMotor.configReverseSoftLimitEnable(false, 0); 
   }
 
   public void configMotors(){
@@ -75,8 +87,8 @@ public class ElevatorPivot extends SubsystemBase {
   @Override
   public void periodic(){
     if(rotateState.equals(Position.OFF)) leftPivotMotor.set(ControlMode.PercentOutput, 0);
-    SmartDashboard.putNumber("Pivot Motor Position: ", leftPivotMotor.getSelectedSensorPosition());
-    setPivotPosition(rotateState.getPivot());
+    SmartDashboard.putNumber("Left Pivot Motor Position: ", leftPivotMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Right Pivot Motor Position: ", rightPivotMotor.getSelectedSensorPosition());
   }
 
   public double getEncoderPosition(){
@@ -92,8 +104,12 @@ public class ElevatorPivot extends SubsystemBase {
     leftPivotMotor.setIntegralAccumulator(0);
   }
 
-  public void setPivotPosition(double position){
-    leftPivotMotor.set(ControlMode.Position, position);
+  public void setPivotPosition(double position, boolean bol){
+    if(bol){
+      leftPivotMotor.set(ControlMode.Position, position);}
+    else{
+      leftPivotMotor.set(ControlMode.PercentOutput, position);
+    }
   }
 
   public boolean atDesiredSetPoint(){

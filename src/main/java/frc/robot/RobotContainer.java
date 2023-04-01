@@ -3,30 +3,34 @@ package frc.robot;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.hal.simulation.REVPHDataJNI;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.GamePiece;
 import frc.robot.Constants.LEDs.LEDMode;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.commands.Arm.*;
-import frc.robot.commands.Gripper.CloseGripper;
-import frc.robot.commands.Gripper.OpenGripper;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Intake.IntakeModule;
+import frc.robot.subsystems.Intake.Wrist;
 import frc.robot.subsystems.LEDs.LEDs;
 
 /**
@@ -60,11 +64,13 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(baseDriver, 8);
 
     /* Subsystems */
+    private final Vision s_Vision = new Vision();
     private final Swerve s_Swerve = new Swerve();
     private final ElevatorPivot elevatorPivot = new ElevatorPivot();
     private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
-    private final Gripper gripper = new Gripper();
     private final LEDs leds = new LEDs();
+    private final IntakeModule clawMotors = new IntakeModule();
+    private final Wrist wrist = new Wrist();
 
     /* Autonomous Mode Chooser */
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
@@ -73,12 +79,13 @@ public class RobotContainer {
     private static Map<String, Command> eventMap = new HashMap<>();
     {
         eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-        eventMap.put("releaseGripper", new OpenGripper(gripper));
+       // eventMap.put("releaseGripper", new OpenGripper(gripper));
         eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
-        eventMap.put("floorArm", new FloorPreset(elevatorPivot));
-        eventMap.put("closeGripper", new CloseGripper(gripper));
+        eventMap.put("floorArm", new FloorPreset(elevatorPivot, elevatorExtension));
+        //eventMap.put("closeGripper", new CloseGripper(gripper));
         eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
         eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
+        eventMap.put("X-Lock", new XLock(s_Swerve));
 }
 
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -116,6 +123,10 @@ public class RobotContainer {
     private final PathPlannerTrajectory RightScoreTwo = PathPlanner.loadPath("RightScoreTwo",
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
 
+    private final PathPlannerTrajectory justMoving = PathPlanner.loadPath("Just Moving",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+
+    private final DoNothing doNothing = new DoNothing();
 
     // Commands //
     FloorPreset floor;
@@ -123,20 +134,22 @@ public class RobotContainer {
     TopPreset top;
     ResetArm resetArm;
 
-    CloseGripper closeGripper;
-    OpenGripper openGripper;
 
     XLock xLock;
 
     AutoBalancing autoBalance;
-
     YellowLEDs yellowLEDs;
     PurpleLEDs purpleLEDs;
+    
+    Intake intake;
+    Outtake outtake;
+    
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        CameraServer.startAutomaticCapture();
         s_Swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_Swerve,
@@ -153,13 +166,19 @@ public class RobotContainer {
                         elevatorPivot,
                         () -> armDriver.getRawAxis(pivotAxis)));
 
-        elevatorExtension.setDefaultCommand(
+        /*elevatorExtension.setDefaultCommand(
                 new ElevatorExtend(
                         elevatorExtension,
                         () -> armDriver.getRawAxis(extensionAxis)));
+*/
+        wrist.setDefaultCommand(
+                new ManualWrist(
+                        wrist, 
+                        () -> armDriver.getRawAxis(extensionAxis)));
 
-        floor = new FloorPreset(elevatorPivot);
+        floor = new FloorPreset(elevatorPivot, elevatorExtension);
         floor.addRequirements(elevatorPivot);
+        floor.addRequirements(elevatorExtension);
         middle = new MiddlePreset(elevatorPivot, elevatorExtension);
         middle.addRequirements(elevatorPivot);
         middle.addRequirements(elevatorExtension);
@@ -171,11 +190,6 @@ public class RobotContainer {
         resetArm.addRequirements(elevatorExtension);
 
 
-        closeGripper = new CloseGripper(gripper);
-        closeGripper.addRequirements(gripper);
-        openGripper = new OpenGripper(gripper);
-        openGripper.addRequirements(gripper);
-
         autoBalance = new AutoBalancing(s_Swerve, true);
         autoBalance.addRequirements(s_Swerve);
 
@@ -183,6 +197,11 @@ public class RobotContainer {
         yellowLEDs.addRequirements(leds);
         purpleLEDs = new PurpleLEDs(leds);
         purpleLEDs.addRequirements(leds);
+
+        intake = new Intake(clawMotors);
+        intake.addRequirements(clawMotors);
+        outtake = new Outtake(clawMotors);
+        outtake.addRequirements(clawMotors);
         // Declare Driver Controller Buttons
         DA = new JoystickButton(baseDriver, 1);
         DB = new JoystickButton(baseDriver, 2);
@@ -215,20 +234,20 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
      * it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */                                                 
+     */
     private void configureButtonBindings() {
-      //  AX.onTrue(floor);
-        //AY.onTrue(top);
-        //AA.onTrue(middle);
-        //AB.onTrue(resetArm);
-        ARB.onTrue(new CloseGripper(gripper));
-        ALB.onTrue(new OpenGripper(gripper));
-        //AM1.onTrue(yellowLEDs);
-        //AM2.onTrue(purpleLEDs);
-        /*  Driver Buttons */
-        DM1.onTrue(autoBalance);
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        DX.onTrue(xLock);
+            // AX.onTrue(floor);
+            // AY.onTrue(top);
+            AA.onTrue(middle);
+            AB.onTrue(resetArm);
+            ALB.whileTrue(intake);
+            ARB.whileTrue(outtake);
+            // AM1.onTrue(yellowLEDs);
+            // AM2.onTrue(purpleLEDs);
+            /* Driver Buttons */
+            DM1.onTrue(autoBalance);
+            zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+            DX.onTrue(xLock);
     }
 
     private void configureSmartDashboard() {
@@ -241,6 +260,7 @@ public class RobotContainer {
         autoChooser.addOption("leftScoreTwiceAndCharge", leftScoreTwiceAndCharge);
         autoChooser.addOption("MiddlePlaceAndCharge", MiddlePlaceAndCharge);
         autoChooser.addOption("RightScoreTwo", RightScoreTwo);
+        autoChooser.addOption("Just Moving", justMoving);
 
 
 
@@ -263,6 +283,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return autoBuilder.fullAuto(autoChooser.getSelected());
+        //return autoBuilder.fullAuto(autoChooser.getSelected());
+        return doNothing;
     }
 }

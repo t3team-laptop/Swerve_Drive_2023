@@ -5,18 +5,20 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.Constants;
+import frc.robot.Constants.Position;
 import frc.robot.subsystems.ElevatorExtension;
+import frc.robot.subsystems.ElevatorPivot;
 
 public class MiddlePreset extends CommandBase {
   private ElevatorPivot elevatorPivot;
   private ElevatorExtension elevatorExtension;
-  /** Creates a new MiddlePreset. */
-  public MiddlePreset(ElevatorPivot elevatorPivot, ElevatorExtension elevatorExtension) {
-    this.elevatorPivot = elevatorPivot;
-    addRequirements(elevatorPivot);
-    
+
+  private boolean done = false;
+  /** Creates a new FloorPreset. */
+  public MiddlePreset(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
+    this.elevatorPivot = elevator;
+    addRequirements(elevator);
     this.elevatorExtension = elevatorExtension;
     addRequirements(elevatorExtension);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,20 +31,26 @@ public class MiddlePreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //elevatorPivot.leftPivotPos = Constants.Position.CONEMID.getPivot();
-    elevatorExtension.goToExtensionMidGoal();
+    elevatorPivot.rotateState = Position.CONEMID;
+    elevatorPivot.setPivotPosition(Position.CONEMID.getPivot(), true);
+    elevatorExtension.setExtensionPosition(Position.CONEMID.getExtend(), true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //elevatorPivot.stopPivot();
-    elevatorExtension.stopExtension();
+    //elevator.stopPivot();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if((elevatorPivot.getEncoderPosition() <= Position.CONEMID.getPivot()+5 && 
+    elevatorPivot.getEncoderPosition() >= Position.CONEMID.getPivot()-5 ) &&
+    ((elevatorExtension.getEncoderPosition() <= Position.CONEMID.getExtend()+5 && 
+    elevatorExtension.getEncoderPosition() >= Position.CONEMID.getExtend()-5))){
+      return true;
+    }
     return false;
   }
 }

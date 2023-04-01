@@ -6,9 +6,12 @@ package frc.robot.commands.Arm;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Position;
 import frc.robot.subsystems.ElevatorExtension;
 
 public class ElevatorExtend extends CommandBase {
@@ -31,14 +34,16 @@ public class ElevatorExtend extends CommandBase {
   @Override
   public void execute() {
     double axisVal = MathUtil.applyDeadband(axisSup.getAsDouble(), Constants.stickDeadband);
-    elevator.extend(axisVal);
-
+    //elevator.setExtensionPosition(elevator.getEncoderPosition() + axisVal*3000);
+    elevator.setExtensionPosition(axisVal, false);
+    //elevator.isPosition = false;
+    //elevator.percentOutput = axisVal;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.stopExtension();
+    elevator.setArmState(Position.OFF);
   }
 
   // Returns true when the command should end.

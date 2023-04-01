@@ -40,14 +40,18 @@ public final class Constants {
     public static final double kExtensionMidGoalCount = 34;
     public static final double kExtensionHighGoalCount = 72;
 
-    // Gripper 
-    public static final int PneumaticHubID = 11;
+    // Intake 
+    public static final int intakeRollerPort = 24;
 
     public static final class Elevator {
-      public static final double elevatorKP = .01;
-      public static final double elevatorKI = .2;
-      public static final double elevatorKD = .05;
-      public static final double elevatorKF = 0;
+      public static final double elevatorPivotKP = .025;
+      public static final double elevatorPivotKI = 0;
+      public static final double elevatorPivotKD = 0;
+      public static final double elevatorPivotKF = 0;
+
+      public static final double elevatorExtensionKP = .1;
+      public static final double elevatorExtensionKI = 0;
+      public static final double elevatorExtensionKD = 0;
 
       public static final double maxMotorVoltage = 5;
 
@@ -129,9 +133,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 2; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 3.4; //TODO: This must be tuned to specific robot
         /** Radians per Second */
-        public static final double maxAngularVelocity = 2; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 5; //TODO: This must be tuned to specific robot
 
         /* Swerve Limiting Values */
         public static final double autoCenterLimit = .3;
@@ -146,7 +150,7 @@ public final class Constants {
             public static final int driveMotorID = 0;
             public static final int angleMotorID = 1;
             public static final int canCoderID = 0;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(2.197266);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(182.636719);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -156,7 +160,7 @@ public final class Constants {
           public static final int driveMotorID = 2;
           public static final int angleMotorID = 3;
           public static final int canCoderID = 1;
-          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(116.630859);
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(296.191406);
           public static final SwerveModuleConstants constants = 
               new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -166,7 +170,7 @@ public final class Constants {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 5;
             public static final int canCoderID = 2;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(192.744141);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6.943359);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -176,7 +180,7 @@ public final class Constants {
           public static final int driveMotorID = 6;
           public static final int angleMotorID = 7;
           public static final int canCoderID = 3;
-          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(148.447266);
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(328.623047);
           public static final SwerveModuleConstants constants = 
               new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -210,10 +214,10 @@ public final class Constants {
       CONEHIGH(505111.000000, -121697.000000),
       CUBEHIGH(1.55, 35),
       MID(0, 0),
-      CONEMID(.104327, 23),
+      CONEMID(276566.000000, -75601.000000),
       CUBEMID(1.427, 16.5),
-      FLOOR(.5236, .25),
-      STANDBY(1.1765, .25),
+      FLOOR(.5236, .25), 
+      STANDBY(0, 0),
       CUBEINTAKE(0.0, 0.3),
       STANDINGCONEINTAKE(5.106, 14.380),
       TIPPEDCONEINTAKE(5.572, 1.333),
