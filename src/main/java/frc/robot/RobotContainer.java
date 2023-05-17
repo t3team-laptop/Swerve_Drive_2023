@@ -2,28 +2,20 @@ package frc.robot;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.hal.simulation.REVPHDataJNI;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.GamePiece;
+import frc.robot.Constants.Position;
 import frc.robot.Constants.LEDs.LEDMode;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
@@ -32,6 +24,7 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.Intake.IntakeModule;
 import frc.robot.subsystems.Intake.Wrist;
 import frc.robot.subsystems.LEDs.LEDs;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -67,7 +60,6 @@ public class RobotContainer {
     private final Vision s_Vision = new Vision();
     private final Swerve s_Swerve = new Swerve();
     private final ElevatorPivot elevatorPivot = new ElevatorPivot();
-    private final ElevatorExtension elevatorExtension = new ElevatorExtension();;
     private final LEDs leds = new LEDs();
     private final IntakeModule clawMotors = new IntakeModule();
     private final Wrist wrist = new Wrist();
@@ -76,17 +68,19 @@ public class RobotContainer {
     private final SendableChooser<PathPlannerTrajectory> autoChooser = new SendableChooser<>();
 
     /* Autonomous */
+     
     private static Map<String, Command> eventMap = new HashMap<>();
     {
-        eventMap.put("setcubelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-       // eventMap.put("releaseGripper", new OpenGripper(gripper));
-        eventMap.put("autoBalance", new AutoBalancing(s_Swerve, true));
-        eventMap.put("floorArm", new FloorPreset(elevatorPivot, elevatorExtension));
-        //eventMap.put("closeGripper", new CloseGripper(gripper));
-        eventMap.put("setconelvl3", new TopPreset(elevatorPivot, elevatorExtension));
-        eventMap.put("resetArm", new ResetArm(elevatorPivot, elevatorExtension));
+        eventMap.put("setcubelvl3", new MiddlePreset(elevatorPivot, wrist).withTimeout(2));
         eventMap.put("X-Lock", new XLock(s_Swerve));
+        eventMap.put("Outtake", new Outtake(clawMotors).withTimeout(1));
+        eventMap.put("Zero", new Zero(elevatorPivot, wrist).withTimeout(2));
+        eventMap.put("armHigh", new ResetArm(elevatorPivot, wrist).withTimeout(2));
+        eventMap.put("zeroGyro", new InstantCommand(() -> s_Swerve.zeroGyro()));
+        eventMap.put("fixSwerve", new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
 }
+
+ 
 
     private final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             s_Swerve::getPose,
@@ -125,15 +119,20 @@ public class RobotContainer {
 
     private final PathPlannerTrajectory justMoving = PathPlanner.loadPath("Just Moving",
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    private final PathPlannerTrajectory MiddlePlace = PathPlanner.loadPath("Middle Place",
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
+    private final PathPlannerTrajectory DONOTHING = PathPlanner.loadPath("DONOTHING",
+             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared);
 
-    private final DoNothing doNothing = new DoNothing();
 
     // Commands //
     FloorPreset floor;
     MiddlePreset middle;
     TopPreset top;
     ResetArm resetArm;
-
+    Zero zero;
+    HumanPlayerPreset hpp;
+    ManualPivot manualPivot;
 
     XLock xLock;
 
@@ -150,6 +149,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         CameraServer.startAutomaticCapture();
+           
         s_Swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_Swerve,
@@ -160,34 +160,32 @@ public class RobotContainer {
 
         xLock = new XLock(s_Swerve);
         xLock.addRequirements(s_Swerve);
-
         elevatorPivot.setDefaultCommand(
                 new ManualPivot(
                         elevatorPivot,
                         () -> armDriver.getRawAxis(pivotAxis)));
+   
 
-        /*elevatorExtension.setDefaultCommand(
-                new ElevatorExtend(
-                        elevatorExtension,
-                        () -> armDriver.getRawAxis(extensionAxis)));
-*/
         wrist.setDefaultCommand(
                 new ManualWrist(
                         wrist, 
                         () -> armDriver.getRawAxis(extensionAxis)));
 
-        floor = new FloorPreset(elevatorPivot, elevatorExtension);
+        floor = new FloorPreset(elevatorPivot, wrist);
         floor.addRequirements(elevatorPivot);
-        floor.addRequirements(elevatorExtension);
-        middle = new MiddlePreset(elevatorPivot, elevatorExtension);
+        middle = new MiddlePreset(elevatorPivot, wrist);
         middle.addRequirements(elevatorPivot);
-        middle.addRequirements(elevatorExtension);
-        top = new TopPreset(elevatorPivot, elevatorExtension);
+        top = new TopPreset(elevatorPivot, wrist);
         top.addRequirements(elevatorPivot);
-        top.addRequirements(elevatorExtension);
-        resetArm = new ResetArm(elevatorPivot, elevatorExtension);
+        resetArm = new ResetArm(elevatorPivot, wrist);
         resetArm.addRequirements(elevatorPivot);
-        resetArm.addRequirements(elevatorExtension);
+        zero = new Zero(elevatorPivot, wrist);
+        zero.addRequirements(elevatorPivot);
+        zero.addRequirements(wrist);
+        hpp = new HumanPlayerPreset(elevatorPivot, wrist);
+        hpp.addRequirements(elevatorPivot);
+        hpp.addRequirements(wrist);
+
 
 
         autoBalance = new AutoBalancing(s_Swerve, true);
@@ -219,7 +217,7 @@ public class RobotContainer {
         AY = new JoystickButton(armDriver, 4);
         ALB = new JoystickButton(armDriver, 5);
         ARB = new JoystickButton(armDriver, 6);
-        AM1 = new JoystickButton(armDriver, 9);
+        AM1 = new JoystickButton(armDriver, 8);
         AM2 = new JoystickButton(armDriver, 10);
 
         // Configure the button bindings
@@ -229,25 +227,27 @@ public class RobotContainer {
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
-     * created by
+     * created by   
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
      * it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-            // AX.onTrue(floor);
-            // AY.onTrue(top);
-            AA.onTrue(middle);
-            AB.onTrue(resetArm);
+            AA.onTrue(floor);
+            AB.onTrue(hpp);
+            AX.onTrue(middle);
+            AY.onTrue(resetArm);
             ALB.whileTrue(intake);
             ARB.whileTrue(outtake);
+            AM1.onTrue(zero);
             // AM1.onTrue(yellowLEDs);
             // AM2.onTrue(purpleLEDs);
+
             /* Driver Buttons */
-            DM1.onTrue(autoBalance);
             zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
             DX.onTrue(xLock);
+            DM1.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
     }
 
     private void configureSmartDashboard() {
@@ -261,8 +261,8 @@ public class RobotContainer {
         autoChooser.addOption("MiddlePlaceAndCharge", MiddlePlaceAndCharge);
         autoChooser.addOption("RightScoreTwo", RightScoreTwo);
         autoChooser.addOption("Just Moving", justMoving);
-
-
+        autoChooser.addOption("Middle Place", MiddlePlace);
+        autoChooser.addOption("DO NOTHING", DONOTHING);
 
         SmartDashboard.putData(autoChooser);
     }
@@ -283,7 +283,14 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        //return autoBuilder.fullAuto(autoChooser.getSelected());
-        return doNothing;
+        s_Swerve.resetEverthing();
+        if(autoChooser.getSelected() != MiddlePlaceAndCharge){
+          return autoBuilder.fullAuto(autoChooser.getSelected());
+        }
+        return Commands.sequence(new MiddlePreset(elevatorPivot, wrist).withTimeout(2), 
+        new Outtake(clawMotors).withTimeout(1), 
+        new ResetArm(elevatorPivot, wrist).withTimeout(2), 
+        autoBuilder.fullAuto(justMoving));
+        //return doNothing;
     }
 }

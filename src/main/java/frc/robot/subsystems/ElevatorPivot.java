@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -23,8 +22,8 @@ public class ElevatorPivot extends SubsystemBase {
   public TalonFX leftPivotMotor;
   public TalonFX rightPivotMotor;
 
-  private int leftLowerBound = 818133; 
-  private int leftUpperBound = -80872;
+  private int leftLowerBound = 641943; 
+  private int leftUpperBound = -95391;
   private int rightLowerBound = 0;
   private int rightUpperBound = 0;
 
@@ -71,13 +70,13 @@ public class ElevatorPivot extends SubsystemBase {
   public void configMotors(){
     leftPivotMotor.configFactoryDefault();
     leftPivotMotor.configAllSettings(FXConfig);
-    leftPivotMotor.setInverted(false);
+    leftPivotMotor.setInverted(true);
     leftPivotMotor.setNeutralMode(NeutralMode.Brake);
     leftPivotMotor.setSelectedSensorPosition(0);
 
     rightPivotMotor.configFactoryDefault();
     rightPivotMotor.configAllSettings(FXConfig);
-    rightPivotMotor.setInverted(true);
+    rightPivotMotor.setInverted(false);
     rightPivotMotor.setNeutralMode(NeutralMode.Brake);
     rightPivotMotor.setSelectedSensorPosition(0);
     rightPivotMotor.follow(leftPivotMotor);

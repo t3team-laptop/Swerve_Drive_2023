@@ -5,22 +5,27 @@
 package frc.robot.subsystems.Intake;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.math.Conversions;
 import frc.robot.Constants.Position;
 
 public class Wrist extends SubsystemBase {
+  public double position;
   public TalonFX wristMotor;
-
+  
   private int lowerBound = 0;
-  private int upperBound = 0;
+  private int upperBound = -227912;
 
   public Position rotateState;
   private Debouncer setpointDebouncer;
@@ -36,9 +41,10 @@ public class Wrist extends SubsystemBase {
   /** Creates a new Wrist. */
   public Wrist() {
     wristMotor = new TalonFX(25);
-    FXConfig.slot0.kP = 1;
+    FXConfig.slot0.kP = .05;
     FXConfig.slot0.kI = 0;
-    FXConfig.slot0.kD = 0;
+    FXConfig.slot0.kD = 0.0;
+    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(.05, 0, 0.0);
     FXConfig.supplyCurrLimit = rotateSupplyLimit;
     FXConfig.openloopRamp = 0.25;
     FXConfig.closedloopRamp = .2;
@@ -82,9 +88,10 @@ public class Wrist extends SubsystemBase {
     wristMotor.setIntegralAccumulator(0);
   }
 
-  public void setPivotPosition(double position, boolean bol){
+  public void setPivotPosition(double pos, boolean bol){
+    position = pos;
     if(bol){
-      wristMotor.set(ControlMode.Position, position);}
+      wristMotor.set(ControlMode.Position, pos);}
     else{
       wristMotor.set(ControlMode.PercentOutput, position);
     }

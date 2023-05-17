@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.util.WPILibVersion;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.HSV;
 import frc.lib.util.SwerveModuleConstants;
@@ -96,7 +94,7 @@ public final class Constants {
         public static final boolean angleEnableCurrentLimit = true;
 
         public static final int driveContinuousCurrentLimit = 35;
-        public static final int drivePeakCurrentLimit = 60;
+        public static final int drivePeakCurrentLimit = 50;
         public static final double drivePeakCurrentDuration = 0.1;
         public static final boolean driveEnableCurrentLimit = true;
 
@@ -150,7 +148,7 @@ public final class Constants {
             public static final int driveMotorID = 0;
             public static final int angleMotorID = 1;
             public static final int canCoderID = 0;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(182.636719);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(179.12); //BEVEL GEARS FACE LEFT
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -160,7 +158,7 @@ public final class Constants {
           public static final int driveMotorID = 2;
           public static final int angleMotorID = 3;
           public static final int canCoderID = 1;
-          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(296.191406);
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(294.70);
           public static final SwerveModuleConstants constants = 
               new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -170,7 +168,7 @@ public final class Constants {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 5;
             public static final int canCoderID = 2;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(6.943359);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(9.49);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -180,7 +178,7 @@ public final class Constants {
           public static final int driveMotorID = 6;
           public static final int angleMotorID = 7;
           public static final int canCoderID = 3;
-          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(328.623047);
+          public static final Rotation2d angleOffset = Rotation2d.fromDegrees(329.94);
           public static final SwerveModuleConstants constants = 
               new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -210,26 +208,31 @@ public final class Constants {
     }
     public enum Position {
 
-      HIGH(0, 0),
-      CONEHIGH(505111.000000, -121697.000000),
-      CUBEHIGH(1.55, 35),
-      MID(0, 0),
-      CONEMID(276566.000000, -75601.000000),
-      CUBEMID(1.427, 16.5),
-      FLOOR(.5236, .25), 
-      STANDBY(0, 0),
-      CUBEINTAKE(0.0, 0.3),
-      STANDINGCONEINTAKE(5.106, 14.380),
-      TIPPEDCONEINTAKE(5.572, 1.333),
-      HUMANPLAYERINTAKE(.8763, 1.5),
-      OFF(0,0);
+      HIGH(0, 0, 0),
+      CONEHIGH(641943, -84096.000000, -32884.000000),
+      CUBEHIGH(1.55, 35, 0),
+      MID(0, 0, -162471.000000),
+      CONEMID(372474.000000, 0, -184569.000000),
+      CUBEMID(1.427, 16.5, 0),
+      FLOOR(630394.000000, 0, -185619.000000), 
+      STANDBY(-101215.000000, 0, -254579.000000),
+      CUBEINTAKE(0.0, 0.3, 0),
+      STANDINGCONEINTAKE(5.106, 14.380, 0),
+      TIPPEDCONEINTAKE(5.572, 1.333, 0),
+      HUMANPLAYERINTAKE(.8763, 1.5, 0),
+      DEFENSE(-92794.000000, 0, 0),
+      ZERO(0,0,0),
+      HP(52746.000000,0,-87380.000000),
+      OFF(0,0, 0);
 
       private double pivotPos;
         private double extendPos;
+        private double wristPos;
 
-        private Position(double pivot, double extend) {
+        private Position(double pivot, double extend, double wrist) {
             this.pivotPos = pivot;
             this.extendPos = extend;
+            this.wristPos = wrist;
         }
 
         public double getPivot() {
@@ -238,6 +241,10 @@ public final class Constants {
 
         public double getExtend() {
             return extendPos;
+        }
+
+        public double getWrist(){
+          return wristPos;
         }
     }
     public enum GamePiece {

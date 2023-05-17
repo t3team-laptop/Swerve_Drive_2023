@@ -9,11 +9,11 @@ import frc.robot.Constants.Position;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.subsystems.Intake.Wrist;
 
-public class MiddlePreset extends CommandBase {
+public class HumanPlayerPreset extends CommandBase {
   private ElevatorPivot elevatorPivot;
   private Wrist wrist;
   /** Creates a new FloorPreset. */
-  public MiddlePreset(ElevatorPivot elevator, Wrist wrist) {
+  public HumanPlayerPreset(ElevatorPivot elevator, Wrist wrist) {
     this.elevatorPivot = elevator;
     addRequirements(elevator);
     this.wrist = wrist;
@@ -28,10 +28,10 @@ public class MiddlePreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    wrist.rotateState = Position.CONEMID;
-    wrist.setPivotPosition(Position.CONEMID.getWrist(), true);
-    elevatorPivot.rotateState = Position.CONEMID;
-    elevatorPivot.setPivotPosition(Position.CONEMID.getPivot(), true);
+    wrist.rotateState = Position.HP;
+    wrist.setPivotPosition(Position.HP.getWrist(), true);
+    elevatorPivot.rotateState = Position.HP;
+    elevatorPivot.setPivotPosition(Position.HP.getPivot(), true);
   }
 
   // Called once the command ends or is interrupted.

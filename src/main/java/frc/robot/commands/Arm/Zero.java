@@ -4,25 +4,20 @@
 
 package frc.robot.commands.Arm;
 
-import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.Position;
-import frc.robot.subsystems.ElevatorExtension;
+import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.subsystems.Intake.Wrist;
 
-public class ElevatorExtend extends CommandBase {
-  private ElevatorExtension elevator;
-  private DoubleSupplier axisSup;
-  /** Creates a new ElevatorExtend. */
-  public ElevatorExtend(ElevatorExtension elevator, DoubleSupplier axisSup) {
-    this.elevator = elevator;
+public class Zero extends CommandBase {
+  private ElevatorPivot elevatorPivot;
+  private Wrist wrist;
+  /** Creates a new FloorPreset. */
+  public Zero(ElevatorPivot elevator, Wrist wrist) {
+    this.elevatorPivot = elevator;
     addRequirements(elevator);
-
-    this.axisSup = axisSup;
+    this.wrist = wrist;
+    addRequirements(wrist);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -33,17 +28,16 @@ public class ElevatorExtend extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double axisVal = MathUtil.applyDeadband(axisSup.getAsDouble(), Constants.stickDeadband);
-    //elevator.setExtensionPosition(elevator.getEncoderPosition() + axisVal*3000);
-    elevator.setExtensionPosition(axisVal, false);
-    //elevator.isPosition = false;
-    //elevator.percentOutput = axisVal;
+    elevatorPivot.rotateState = Position.ZERO;
+    elevatorPivot.setPivotPosition(Position.ZERO.getPivot(), true);
+    wrist.rotateState = Position.ZERO;
+    wrist.setPivotPosition(Position.ZERO.getWrist(), true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.setArmState(Position.OFF);
+    //elevator.stopPivot();
   }
 
   // Returns true when the command should end.

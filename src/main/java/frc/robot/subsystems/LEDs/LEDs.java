@@ -16,8 +16,6 @@ public class LEDs extends SubsystemBase {
     private final AddressableLEDBuffer m_ledBuffer;
     private LEDMode mode;
 
-    private GamePiece hpSignal = GamePiece.CONE;
-
     private final Flash whiteDot;
     private final Flash purpleFlash;
     private final Flash yellowFlash;

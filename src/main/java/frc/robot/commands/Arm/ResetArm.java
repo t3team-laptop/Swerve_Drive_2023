@@ -7,20 +7,19 @@ package frc.robot.commands.Arm;
 //import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.Position;
-import frc.robot.subsystems.ElevatorExtension;
 import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.subsystems.Intake.Wrist;
 
 public class ResetArm extends CommandBase {
   private ElevatorPivot elevatorPivot;
-  private ElevatorExtension elevatorExtension;
+  private Wrist wrist;
   /** Creates a new FloorPreset. */
-  public ResetArm(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
+  public ResetArm(ElevatorPivot elevator, Wrist wrist) {
     this.elevatorPivot = elevator;
     addRequirements(elevator);
-    this.elevatorExtension = elevatorExtension;
-    addRequirements(elevatorExtension);
+    this.wrist = wrist;
+    addRequirements(wrist);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -31,8 +30,10 @@ public class ResetArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorPivot.setPivotPosition(0, true);
-    elevatorExtension.setExtensionPosition(0, true);
+    elevatorPivot.rotateState = Position.STANDBY;
+    elevatorPivot.setPivotPosition(Position.STANDBY.getPivot(), true);
+    wrist.rotateState = Position.CONEMID;
+    wrist.setPivotPosition(Position.CONEMID.getWrist(), true);
   }
 
   // Called once the command ends or is interrupted.

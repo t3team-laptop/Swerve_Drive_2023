@@ -135,6 +135,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void resetEverthing(){
+        for(SwerveModule mod : mSwerveMods){
+            mod.resetEncoder();
+        }
+    }
+
     public void setX(){
         mSwerveMods[0].setDesiredState(new SwerveModuleState(0.1, Rotation2d.fromDegrees(45.0)),true);
         mSwerveMods[1].setDesiredState(new SwerveModuleState(0.1, Rotation2d.fromDegrees(315.0)),true);

@@ -5,20 +5,19 @@
 package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.Position;
-import frc.robot.subsystems.ElevatorExtension;
 import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.subsystems.Intake.Wrist;
 
 public class TopPreset extends CommandBase {
   private ElevatorPivot elevatorPivot;
-  private ElevatorExtension elevatorExtension;
+  private Wrist wrist;
   /** Creates a new FloorPreset. */
-  public TopPreset(ElevatorPivot elevator, ElevatorExtension elevatorExtension) {
+  public TopPreset(ElevatorPivot elevator, Wrist wrist) {
     this.elevatorPivot = elevator;
     addRequirements(elevator);
-    this.elevatorExtension = elevatorExtension;
-    addRequirements(elevatorExtension);
+    this.wrist = wrist;
+    addRequirements(wrist);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -29,10 +28,10 @@ public class TopPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorPivot.isPosition = true;
-    elevatorPivot.setArmState(Position.CONEHIGH);
-    elevatorExtension.isPosition = true;
-    elevatorExtension.setArmState(Position.CONEHIGH);
+    wrist.rotateState = Position.CONEHIGH;
+    wrist.setPivotPosition(Position.CONEHIGH.getWrist(), true);
+    elevatorPivot.rotateState = Position.CONEHIGH;
+    elevatorPivot.setPivotPosition(Position.CONEHIGH.getPivot(), true);
   }
 
   // Called once the command ends or is interrupted.
